@@ -24,16 +24,30 @@
 qx.Bootstrap.define("qx.module.Attribute", {
   statics :
   {
+    __bools : {
+      compact  : 1,
+      nowrap   : 1,
+      ismap    : 1,
+      declare  : 1,
+      noshade  : 1,
+      checked  : 1,
+      disabled : 1,
+      readOnly : 1,
+      multiple : 1,
+      selected : 1,
+      noresize : 1,
+      defer    : 1,
+      allowTransparency : 1
+    },
+
+
     /**
      * Returns the HTML content of the first item in the collection
      * @attach {q}
      * @return {String|null} HTML content or null if the collection is empty
      */
     getHtml : function() {
-      if (this[0]) {
-        return qx.bom.element.Attribute.get(this[0], "html");
-      }
-      return null;
+      return jQuery.prototype.html.call(this);
     },
 
 
@@ -45,9 +59,7 @@ qx.Bootstrap.define("qx.module.Attribute", {
      * @return {q} The collection for chaining
      */
     setHtml : function(html) {
-      for (var i=0; i < this.length; i++) {
-        qx.bom.element.Attribute.set(this[i], "html", html);
-      };
+      jQuery.prototype.html.call(this, html);
       return this;
     },
 
@@ -61,9 +73,7 @@ qx.Bootstrap.define("qx.module.Attribute", {
      * @return {q} The collection for chaining
      */
     setAttribute : function(name, value) {
-      for (var i=0; i < this.length; i++) {
-        qx.bom.element.Attribute.set(this[i], name, value);
-      };
+      jQuery.prototype.attr.call(this, name, value);
       return this;
     },
 
@@ -77,10 +87,11 @@ qx.Bootstrap.define("qx.module.Attribute", {
      * @return {var} Attribute value
      */
     getAttribute : function(name) {
-      if (this[0]) {
-        return qx.bom.element.Attribute.get(this[0], name);
+      var value = jQuery.prototype.attr.call(this, name);
+      if (qx.module.Attribute.__bools[value]) {
+        return value == name;
       }
-      return null;
+      return value;
     },
 
 
@@ -92,9 +103,7 @@ qx.Bootstrap.define("qx.module.Attribute", {
      * @return {q} The collection for chaining
      */
     removeAttribute : function(name) {
-      for (var i=0; i < this.length; i++) {
-        qx.bom.element.Attribute.set(this[i], name, null);
-      };
+      jQuery.prototype.removeAttr.call(this, name);
       return this;
     },
 
@@ -154,9 +163,7 @@ qx.Bootstrap.define("qx.module.Attribute", {
      * @return {q} The collection for chaining
      */
     setProperty : function(name, value) {
-      for (var i=0; i < this.length; i++) {
-        this[i][name] = value;
-      };
+      jQuery.prototype.prop.call(this, name, value);
       return this;
     },
 
@@ -170,10 +177,7 @@ qx.Bootstrap.define("qx.module.Attribute", {
      * @return {var} Property value
      */
     getProperty : function(name) {
-      if (this[0]) {
-        return this[0][name];
-      }
-      return null;
+      return jQuery.prototype.prop.call(this, name)
     },
 
 
@@ -218,10 +222,7 @@ qx.Bootstrap.define("qx.module.Attribute", {
      * @return {String|Array}
      */
     getValue : function() {
-      if (this[0]) {
-        return qx.bom.Input.getValue(this[0]);
-      }
-      return null;
+      return jQuery.prototype.val.call(this);
     },
 
 
@@ -241,10 +242,7 @@ qx.Bootstrap.define("qx.module.Attribute", {
      */
     setValue : function(value)
     {
-      for (var i=0, l=this.length; i<l; i++) {
-        qx.bom.Input.setValue(this[i], value);
-      }
-
+      jQuery.prototype.val.call(this, value);
       return this;
     }
   },

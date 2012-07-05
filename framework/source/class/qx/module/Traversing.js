@@ -84,6 +84,18 @@ qx.Bootstrap.define("qx.module.Traversing", {
 
 
     /**
+     * Method needed for jQuery usage. Compatible with jQuery's each method.
+     * @param fn {Function} The callback.
+     */
+    each : function(fn) {
+      for (var i=0; i < this.length; i++) {
+        fn.call(this[i], i, this[i]);
+      };
+      return this;
+    },
+
+
+    /**
      * Returns a copy of the collection within the given range.
      *
      * @attach {q}
@@ -625,6 +637,7 @@ qx.Bootstrap.define("qx.module.Traversing", {
       "add" : statics.add,
       "getChildren" : statics.getChildren,
       "forEach" : statics.forEach,
+      "each" : statics.each,
       "slice" : statics.slice,
       "getParents" : statics.getParents,
       "getAncestors" : statics.getAncestors,

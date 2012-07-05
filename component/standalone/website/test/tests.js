@@ -1048,6 +1048,7 @@ testrunner.define({
     test.setAttribute("id", "affe");
     this.assertEquals("affe", test[0].getAttribute("id"));
     this.assertEquals("affe", test.getAttribute("id"));
+
     test.removeAttribute("id");
     if (q.env.get("engine.name") == "mshtml" && q.env.get("browser.documentmode") < 8) {
       this.assertEquals("", test[0].getAttribute("id"));
@@ -1055,7 +1056,7 @@ testrunner.define({
     }
     else {
       this.assertNull(test[0].getAttribute("id"));
-      this.assertNull(test.getAttribute("id"));
+      this.assertUndefined(test.getAttribute("id"));
     }
   },
 
@@ -1066,15 +1067,15 @@ testrunner.define({
     this.assertEquals("affe", test.getAttributes(["id", "x"]).id);
     this.assertEquals("y", test.getAttributes(["id", "x"]).x);
     test.removeAttributes(["id", "x"]);
-    
+
     // removed attributes have empty string values in old IEs
     if (q.env.get("engine.name") == "mshtml" && q.env.get("browser.documentmode") < 8) {
       this.assertEquals("", test.getAttributes(["id", "x"]).id);
     }
     else {
-      this.assertNull(test.getAttributes(["id", "x"]).id);
+      this.assertUndefined(test.getAttributes(["id", "x"]).id);
     }
-    this.assertNull(test.getAttributes(["id", "x"]).x);
+    this.assertUndefined(test.getAttributes(["id", "x"]).x);
   },
 
   testProperty : function() {
@@ -1111,10 +1112,9 @@ testrunner.define({
     this.assertEquals("affe", q("#sandbox input[type=checkbox]").getValue());
     this.assertEquals("affe", q("#sandbox select").getValue());
     this.assertArrayEquals(["foo", "baz"], q("#multiple").getValue());
-    
+
     q("#sandbox input").setValue("fnord");
-    // setting the same value again sets the 'checked' attribute
-    q("#sandbox input[type=checkbox]").setValue("affe");
+    q("#sandbox input[type=checkbox]").setAttribute("checked", "checked");
     q("#sandbox select").setValue("foo");
     q("#multiple").setValue(["bar", "boing"])
 
