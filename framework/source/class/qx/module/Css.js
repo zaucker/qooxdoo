@@ -17,9 +17,6 @@
      * Daniel Wagner (danielwagner)
 
 ************************************************************************ */
-/* ************************************************************************
-#require(qx.bom.element.Style#set)
-************************************************************************ */
 /**
  * CSS/Style property manipulation module
  */
@@ -36,12 +33,8 @@ qx.Bootstrap.define("qx.module.Css", {
      * @return {q} The collection for chaining
      */
     setStyle : function(name, value) {
-      if (/\w-\w/.test(name)) {
-        name = qx.lang.String.camelCase(name);
-      }
-      for (var i=0; i < this.length; i++) {
-        qx.bom.element.Style.set(this[i], name, value);
-      };
+      //TODO check for special types in qx.bom.element.style.set
+      jQuery.prototype.css.call(this, name, value);
       return this;
     },
 
@@ -55,13 +48,8 @@ qx.Bootstrap.define("qx.module.Css", {
      * @return {var} Style property value
      */
     getStyle : function(name) {
-      if (this[0]) {
-        if (/\w-\w/.test(name)) {
-          name = qx.lang.String.camelCase(name);
-        }
-        return qx.bom.element.Style.get(this[0], name);
-      }
-      return null;
+      //TODO check for special types in qx.bom.element.style.set
+      return jQuery.prototype.css.call(this, name);
     },
 
 
@@ -105,9 +93,7 @@ qx.Bootstrap.define("qx.module.Css", {
      * @return {q} The collection for chaining
      */
     addClass : function(name) {
-      for (var i=0; i < this.length; i++) {
-        qx.bom.element.Class.add(this[i], name);
-      };
+      jQuery.prototype.addClass.call(this, name);
       return this;
     },
 
@@ -120,8 +106,8 @@ qx.Bootstrap.define("qx.module.Css", {
      * @return {q} The collection for chaining
      */
     addClasses : function(names) {
-      for (var i=0; i < this.length; i++) {
-        qx.bom.element.Class.addClasses(this[i], names);
+      for (var i=0; i < names.length; i++) {
+        this.addClass(names[i]);
       };
       return this;
     },
@@ -135,9 +121,7 @@ qx.Bootstrap.define("qx.module.Css", {
      * @return {q} The collection for chaining
      */
     removeClass : function(name) {
-      for (var i=0; i < this.length; i++) {
-        qx.bom.element.Class.remove(this[i], name);
-      };
+      jQuery.prototype.removeClass.call(this);
       return this;
     },
 
@@ -150,8 +134,8 @@ qx.Bootstrap.define("qx.module.Css", {
      * @return {q} The collection for chaining
      */
     removeClasses : function(names) {
-      for (var i=0; i < this.length; i++) {
-        qx.bom.element.Class.removeClasses(this[i], names);
+      for (var i=0; i < names.length; i++) {
+        this.removeClass(names[i]);
       };
       return this;
     },
@@ -165,10 +149,7 @@ qx.Bootstrap.define("qx.module.Css", {
      * @return {Boolean} <code>true</code> if the first item has the given class name
      */
     hasClass : function(name) {
-      if (!this[0]) {
-        return false;
-      }
-      return qx.bom.element.Class.has(this[0], name);
+      return jQuery.prototype.hasClass.call(this, name);
     },
 
 
@@ -179,10 +160,7 @@ qx.Bootstrap.define("qx.module.Css", {
      * @return {String} Class name
      */
     getClass : function() {
-      if (!this[0]) {
-        return "";
-      }
-      return qx.bom.element.Class.get(this[0]);
+      return jQuery.prototype.attr.call(this, "class");
     },
 
 
@@ -194,12 +172,7 @@ qx.Bootstrap.define("qx.module.Css", {
      * @return {q} The collection for chaining
      */
     toggleClass : function(name) {
-      var bCls = qx.bom.element.Class;
-      for (var i=0, l=this.length; i<l; i++) {
-        bCls.has(this[i], name) ?
-          bCls.remove(this[i], name) :
-          bCls.add(this[i], name);
-      }
+      jQuery.prototype.toggleClass.call(this, name);
       return this;
     },
 
@@ -212,7 +185,7 @@ qx.Bootstrap.define("qx.module.Css", {
      * @return {q} The collection for chaining
      */
     toggleClasses : function(names) {
-      for (var i=0,l=names.length; i<l; i++) {
+      for (var i=0, l=names.length; i<l; i++) {
         this.toggleClass(names[i]);
       }
       return this;
@@ -228,9 +201,8 @@ qx.Bootstrap.define("qx.module.Css", {
      * @return {q} The collection for chaining
      */
     replaceClass : function(oldName, newName) {
-      for (var i=0, l=this.length; i<l; i++) {
-        qx.bom.element.Class.replace(this[i], oldName, newName);
-      }
+      this.removeClass(oldName);
+      this.addClass(newName);
       return this;
     },
 
@@ -241,19 +213,7 @@ qx.Bootstrap.define("qx.module.Css", {
      * @return {Number} The first item's rendered height
      */
     getHeight : function() {
-      var elem = this[0];
-
-      if (elem) {
-        if (qx.dom.Node.isElement(elem)) {
-          return qx.bom.element.Dimension.getHeight(elem);
-        } else if (qx.dom.Node.isDocument(elem)) {
-          return qx.bom.Document.getHeight(qx.dom.Node.getWindow(elem));
-        } else if (qx.dom.Node.isWindow(elem)) {
-          return qx.bom.Viewport.getHeight(elem);
-        }
-      }
-
-      return null;
+      return jQuery(this).outerHeight();
     },
 
 
@@ -263,19 +223,7 @@ qx.Bootstrap.define("qx.module.Css", {
      * @return {Number} The first item's rendered width
      */
     getWidth : function() {
-      var elem = this[0];
-
-      if (elem) {
-        if (qx.dom.Node.isElement(elem)) {
-          return qx.bom.element.Dimension.getWidth(elem);
-        } else if (qx.dom.Node.isDocument(elem)) {
-          return qx.bom.Document.getWidth(qx.dom.Node.getWindow(elem));
-        } else if (qx.dom.Node.isWindow(elem)) {
-          return qx.bom.Viewport.getWidth(elem);
-        }
-      }
-
-      return null;
+      return jQuery(this).outerWidth();
     },
 
 
@@ -289,13 +237,10 @@ qx.Bootstrap.define("qx.module.Css", {
      * of the element relative to the document.
      */
     getOffset : function() {
-      var elem = this[0];
-
-      if (elem) {
-        return qx.bom.element.Location.get(elem);
-      }
-
-      return null;
+      var offset = jQuery.prototype.offset.call(this);
+      offset.bottom = offset.top + this.getHeight();
+      offset.right = offset.left + this.getWidth();
+      return offset;
     },
 
 
@@ -306,14 +251,8 @@ qx.Bootstrap.define("qx.module.Css", {
      * @attach {q}
      * @return {Number} Computed content height
      */
-    getContentHeight : function()
-    {
-      var obj = this[0];
-      if (qx.dom.Node.isElement(obj)) {
-        return qx.bom.element.Dimension.getContentHeight(obj);
-      }
-
-      return null;
+    getContentHeight : function() {
+      return jQuery.prototype.height.call(this);
     },
 
 
@@ -324,14 +263,8 @@ qx.Bootstrap.define("qx.module.Css", {
      * @attach {q}
      * @return {Number} Computed content width
      */
-    getContentWidth : function()
-    {
-      var obj = this[0];
-      if (qx.dom.Node.isElement(obj)) {
-        return qx.bom.element.Dimension.getContentWidth(obj);
-      }
-
-      return null;
+    getContentWidth : function() {
+      return jQuery.prototype.width.call(this);
     },
 
 
@@ -343,14 +276,12 @@ qx.Bootstrap.define("qx.module.Css", {
      * @return {Map} a map with the keys <code>left</code> and <code>top</code>
      * containing the distance between the elements
      */
-    getPosition : function()
-    {
-      var obj = this[0];
-      if (qx.dom.Node.isElement(obj)) {
-        return qx.bom.element.Location.getPosition(obj);
-      }
-
-      return null;
+    getPosition : function() {
+      var pos = jQuery(this).position();
+      // subtract the margin
+      pos.top += parseInt(this.getStyle("marginTop"));
+      pos.left += parseInt(this.getStyle("marginLeft"));
+      return pos;
     },
 
 
@@ -362,7 +293,17 @@ qx.Bootstrap.define("qx.module.Css", {
      * @param doc {Document?} Document to modify
      */
     includeStylesheet : function(uri, doc) {
-      qx.bom.Stylesheet.includeFile(uri, doc);
+      if (!doc) {
+        doc = document;
+      }
+
+      var el = doc.createElement("link");
+      el.type = "text/css";
+      el.rel = "stylesheet";
+      el.href = uri;
+
+      var head = doc.getElementsByTagName("head")[0];
+      head.appendChild(el);
     }
   },
 

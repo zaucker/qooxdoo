@@ -240,8 +240,7 @@ qx.Bootstrap.define("qx.module.Attribute", {
      * @param value {String|Number|Array} The value to apply
      * @return {q} The collection for chaining
      */
-    setValue : function(value)
-    {
+    setValue : function(value) {
       jQuery.prototype.val.call(this, value);
       return this;
     }
