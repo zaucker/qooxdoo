@@ -33,7 +33,7 @@ qx.Bootstrap.define("qx.module.Css", {
      * @return {q} The collection for chaining
      */
     setStyle : function(name, value) {
-      //TODO check for special types in qx.bom.element.style.set
+      name = qx.bom.Style.getPropertyName(name);
       jQuery.prototype.css.call(this, name, value);
       return this;
     },
@@ -48,7 +48,7 @@ qx.Bootstrap.define("qx.module.Css", {
      * @return {var} Style property value
      */
     getStyle : function(name) {
-      //TODO check for special types in qx.bom.element.style.set
+      name = qx.bom.Style.getPropertyName(name);
       return jQuery.prototype.css.call(this, name);
     },
 

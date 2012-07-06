@@ -27,7 +27,49 @@
 qx.Bootstrap.define("qx.bom.Style",
 {
   statics : {
-    /** Vendor-specific style property prefixes **/
+    
+    /**
+     * Map of detected style property names
+     * @internal
+     */
+    STYLENAMES : {},
+    
+    /**
+     * Map of CSS style names
+     * @internal
+     */
+    CSSNAMES : {},
+    
+    /**
+     * Detect vendor-prefixed properties.
+     */
+    __detectVendorProperties : function()
+    {
+      this.STYLENAMES = {
+        "appearance" : qx.core.Environment.get("css.appearance"),
+        "userSelect" : qx.core.Environment.get("css.userselect"),
+        "textOverflow" : qx.core.Environment.get("css.textoverflow"),
+        "borderImage" : qx.core.Environment.get("css.borderimage"),
+        "float" : qx.core.Environment.get("css.float"),
+        "userModify" : qx.core.Environment.get("css.usermodify"),
+        "boxSizing" : qx.core.Environment.get("css.boxsizing")
+      };
+
+      for (var key in this.STYLENAMES) {
+        if (!this.STYLENAMES[key]) {
+          delete this.STYLENAMES[key];
+        }
+        else {
+          this.CSSNAMES[key] = key == "float" ? "float" :
+            qx.lang.String.hyphenate(this.STYLENAMES[key]);
+        }
+      }
+    },
+    
+    
+    /** 
+     * Vendor-specific style property prefixes 
+     */
     VENDOR_PREFIXES : ["Webkit", "Moz", "O", "ms", "Khtml"],
 
     /**
@@ -40,9 +82,14 @@ qx.Bootstrap.define("qx.bom.Style",
      */
     getPropertyName : function(propertyName)
     {
+      if (this.STYLENAMES[propertyName]) {
+        return this.STYLENAMES[propertyName];
+      }
+      
       var style = document.documentElement.style;
 
       if (style[propertyName] !== undefined) {
+        this.STYLENAMES[name] = propertyName;
         return propertyName;
       }
 
@@ -50,6 +97,7 @@ qx.Bootstrap.define("qx.bom.Style",
         var prefixedProp = this.VENDOR_PREFIXES[i] +
           qx.lang.String.firstUp(propertyName);
         if (style[prefixedProp] !== undefined) {
+          this.STYLENAMES[name] = prefixedProp;
           return prefixedProp;
         }
       }
@@ -93,5 +141,9 @@ qx.Bootstrap.define("qx.bom.Style",
       }
       return null;
     }
+  },
+
+  defer : function(statics) {
+    statics.__detectVendorProperties();
   }
 });

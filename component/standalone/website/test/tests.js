@@ -861,7 +861,7 @@ testrunner.define({
     test.remove();
   },
   
-  testSpecialProperties : function() {
+  testPrefixedProperties : function() {
     var props = {
       "css.appearance" : ["appearance", "searchfield"],
       "css.textoverflow" : ["textOverflow", "ellipsis"],

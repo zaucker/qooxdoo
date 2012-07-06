@@ -107,54 +107,6 @@ qx.Bootstrap.define("qx.bom.element.Style",
   statics :
   {
     /**
-     * Detect vendor specific properties.
-     */
-    __detectVendorProperties : function()
-    {
-      var styleNames = {
-        "appearance" : qx.core.Environment.get("css.appearance"),
-        "userSelect" : qx.core.Environment.get("css.userselect"),
-        "textOverflow" : qx.core.Environment.get("css.textoverflow"),
-        "borderImage" : qx.core.Environment.get("css.borderimage"),
-        "float" : qx.core.Environment.get("css.float"),
-        "userModify" : qx.core.Environment.get("css.usermodify"),
-        "boxSizing" : qx.core.Environment.get("css.boxsizing")
-      };
-
-      this.__cssNames = {};
-      for (var key in qx.lang.Object.clone(styleNames)) {
-        if (!styleNames[key]) {
-          delete styleNames[key];
-        }
-        else {
-          this.__cssNames[key] = key == "float" ? "float" :
-            qx.lang.String.hyphenate(styleNames[key]);
-        }
-      }
-
-      this.__styleNames = styleNames;
-    },
-
-
-    /**
-     * Gets the (possibly vendor-prefixed) name of a style property and stores
-     * it to avoid multiple checks.
-     *
-     * @param name {String} Style property name to check
-     * @return {String|null} The client-specific name of the property, or
-     * <code>null</code> if it's not supported.
-     */
-    __getStyleName : function(name)
-    {
-      var styleName = qx.bom.Style.getPropertyName(name);
-      if (styleName) {
-        this.__styleNames[name] = styleName;
-      }
-      return styleName;
-    },
-
-
-    /**
      * Mshtml has proprietary pixel* properties for locations and dimensions
      * which return the pixel value. Used by getComputed() in mshtml variant.
      *
@@ -213,7 +165,7 @@ qx.Bootstrap.define("qx.bom.element.Style",
     {
       var html = [];
       var special = this.__special;
-      var names = this.__cssNames;
+      var names = qx.bom.Style.CSSNAMES;
       var name, value;
 
       for (name in map)
@@ -303,7 +255,7 @@ qx.Bootstrap.define("qx.bom.element.Style",
     {
       return (
         this.__special[propertyName] ||
-        this.__styleNames[propertyName] ||
+        qx.bom.Style.STYLENAMES[propertyName] ||
         propertyName in document.documentElement.style
       );
     },
@@ -349,7 +301,7 @@ qx.Bootstrap.define("qx.bom.element.Style",
 
 
       // normalize name
-      name = this.__styleNames[name] || this.__getStyleName(name) || name;
+      name = qx.bom.Style.getPropertyName(name) || name;
 
       // special handling for specific properties
       // through this good working switch this part costs nothing when
@@ -385,7 +337,7 @@ qx.Bootstrap.define("qx.bom.element.Style",
 
       // inline calls to "set" and "reset" because this method is very
       // performance critical!
-      var styleNames = this.__styleNames;
+      var styleNames = qx.bom.Style.STYLENAMES;
       var special = this.__special;
 
       var style = element.style;
@@ -393,7 +345,7 @@ qx.Bootstrap.define("qx.bom.element.Style",
       for (var key in styles)
       {
         var value = styles[key];
-        var name = styleNames[key] || this.__getStyleName(key) || key;
+        var name = qx.bom.Style.getPropertyName(key) || key;
 
         if (value === undefined)
         {
@@ -427,7 +379,7 @@ qx.Bootstrap.define("qx.bom.element.Style",
     reset : function(element, name, smart)
     {
       // normalize name
-      name = this.__styleNames[name] || this.__getStyleName(name) || name;
+      name = qx.bom.Style.getPropertyName(name) || name;
 
       // special handling for specific properties
       if (smart!==false && this.__special[name]) {
@@ -469,7 +421,7 @@ qx.Bootstrap.define("qx.bom.element.Style",
       "mshtml" : function(element, name, mode, smart)
       {
         // normalize name
-        name = this.__styleNames[name] || this.__getStyleName(name) || name;
+        name = qx.bom.Style.getPropertyName(name) || name;
 
         // special handling
         if (smart!==false && this.__special[name]) {
@@ -534,7 +486,7 @@ qx.Bootstrap.define("qx.bom.element.Style",
       "default" : function(element, name, mode, smart)
       {
         // normalize name
-        name = this.__styleNames[name] || this.__getStyleName(name) || name;
+        name = qx.bom.Style.getPropertyName(name) || name;
 
         // special handling
         if (smart!==false && this.__special[name]) {
@@ -580,9 +532,5 @@ qx.Bootstrap.define("qx.bom.element.Style",
         }
       }
     })
-  },
-
-  defer : function(statics) {
-    statics.__detectVendorProperties();
   }
 });
