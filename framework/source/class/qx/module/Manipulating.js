@@ -17,7 +17,6 @@
      * Daniel Wagner (danielwagner)
 
 ************************************************************************ */
-
 /**
  * DOM manipulation module
  */
@@ -33,7 +32,7 @@ qx.Bootstrap.define("qx.module.Manipulating", {
      * @return {q} Collection of elements
      */
     create : function(html) {
-      return q.$init(qx.bom.Html.clean([html]));
+      return q.$init(jQuery.clean([html]));
     },
 
 
@@ -46,11 +45,7 @@ qx.Bootstrap.define("qx.module.Manipulating", {
      * @return {q} New collection with clones
      */
     clone : function(events) {
-      var clones = [];
-      for (var i=0; i < this.length; i++) {
-        clones[i] = this[i].cloneNode(true);
-      };
-
+      var clones = jQuery(this).clone().toArray();
       if (events === true && this.copyEventsTo) {
         this.copyEventsTo(clones);
       }
@@ -65,25 +60,11 @@ qx.Bootstrap.define("qx.module.Manipulating", {
      * a single DOM element or an array of elements
      *
      * @attach{q}
-     * @param html {String|Element[]} HTML string or DOM element(s) to append
+     * @param content {String|Element[]} HTML string or DOM element(s) to append
      * @return {q} The collection for chaining
      */
-    append : function(html) {
-      var arr = qx.bom.Html.clean([html]);
-      var children = q.$init(arr);
-
-      for (var i=0, l=this.length; i < l; i++) {
-        for (var j=0, m=children.length; j < m; j++) {
-          if (i == 0) {
-            // first parent: move the target node(s)
-            qx.dom.Element.insertEnd(children[j], this[i]);
-          }
-          else {
-            qx.dom.Element.insertEnd(children.eq(j).clone(true)[0], this[i]);
-          }
-        }
-      }
-
+    append : function(content) {
+      jQuery(this).append(content);
       return this;
     },
 
@@ -99,20 +80,7 @@ qx.Bootstrap.define("qx.module.Manipulating", {
      * @return {q} The collection for chaining
      */
     appendTo : function(parent) {
-      parent = qx.module.Manipulating.__getElementArray(parent);
-      for (var i=0, l=parent.length; i < l; i++) {
-        for (var j=0, m=this.length; j < m; j++) {
-          if (i == 0) {
-            // first parent: move the target node(s)
-            qx.dom.Element.insertEnd(this[j], parent[i]);
-          }
-          else {
-            // further parents: clone the target node(s)
-            qx.dom.Element.insertEnd(this.eq(j).clone(true)[0], parent[i]);
-          }
-        }
-      }
-
+      jQuery(this).appendTo(parent);
       return this;
     },
 
@@ -126,22 +94,8 @@ qx.Bootstrap.define("qx.module.Manipulating", {
      * @param target {String|Element} Selector expression or DOM element
      * @return {q} The collection for chaining
      */
-    insertBefore : function(target)
-    {
-      target = qx.module.Manipulating.__getElementArray(target);
-      for (var i=0, l=target.length; i < l; i++) {
-        for (var j=0, m=this.length; j < m; j++) {
-          if (i == 0) {
-            // first target: move the target node(s)
-            qx.dom.Element.insertBefore(this[j], target[i]);
-          }
-          else {
-            // further targets: clone the target node(s)
-            qx.dom.Element.insertBefore(this.eq(j).clone(true)[0], target[i]);
-          }
-        }
-      }
-
+    insertBefore : function(target) {
+      jQuery(this).insertBefore(target);
       return this;
     },
 
@@ -156,41 +110,9 @@ qx.Bootstrap.define("qx.module.Manipulating", {
      * @param target {String|Element} Selector expression or DOM element
      * @return {q} The collection for chaining
      */
-    insertAfter : function(target)
-    {
-      target = qx.module.Manipulating.__getElementArray(target);
-      for (var i=0, l=target.length; i < l; i++) {
-        for (var j=this.length - 1; j >= 0; j--) {
-          if (i == 0) {
-            // first target: move the target node(s)
-            qx.dom.Element.insertAfter(this[j], target[i]);
-          }
-          else {
-            // further targets: clone the target node(s)
-            qx.dom.Element.insertAfter(this.eq(j).clone(true)[0], target[i]);
-          }
-        }
-      }
-
+    insertAfter : function(target) {
+      jQuery(this).insertAfter(target);
       return this;
-    },
-
-
-    /**
-     * Returns an array from a selector expression or a single element
-     *
-     * @attach{q}
-     * @param arg {String|Element} Selector expression or DOM element
-     * @return {Element[]} Array of elements
-     * @internal
-     */
-    __getElementArray : function(arg)
-    {
-      if (!qx.lang.Type.isArray(arg)) {
-        var fromSelector = q(arg);
-        arg = fromSelector.length > 0 ? fromSelector : [arg];
-      }
-      return arg;
     },
 
 
@@ -205,71 +127,12 @@ qx.Bootstrap.define("qx.module.Manipulating", {
      * @return {q} The collection for chaining
      */
     wrap : function(wrapper) {
-      var wrapper = qx.module.Manipulating.__getCollectionFromArgument(wrapper);
-
-      if (wrapper.length == 0 || !qx.dom.Node.isElement(wrapper[0])) {
-        return this;
+      // check for selector
+      if (jQuery.clean([wrapper])[0].textContent == wrapper) {
+        wrapper = jQuery(wrapper);
       }
-
-      for (var i=0,l=this.length; i < l; i++) {
-        var clonedwrapper = wrapper.eq(0).clone(true);
-        qx.dom.Element.insertAfter(clonedwrapper[0], this[i]);
-        var innermost = qx.module.Manipulating.__getInnermostElement(clonedwrapper[0]);
-        qx.dom.Element.insertEnd(this[i], innermost);
-      }
-
+      jQuery(this).wrap(wrapper);
       return this;
-    },
-
-
-    /**
-     * Creates a new collection from the given argument
-     * @param arg {var} Selector expression, HTML string, DOM element or list of
-     * DOM elements
-     * @return {q} Collection
-     * @internal
-     */
-    __getCollectionFromArgument : function(arg) {
-      var coll;
-      // Collection/array of DOM elements
-      if (qx.lang.Type.isArray(arg)) {
-        coll = q(arg);
-      }
-      // HTML string
-      else {
-        var arr = qx.bom.Html.clean([arg]);
-        if (arr.length > 0 && qx.dom.Node.isElement(arr[0])) {
-          coll = q(arr);
-        }
-        // Selector or single element
-        else {
-          coll = q(arg);
-        }
-      }
-
-      return coll;
-    },
-
-
-    /**
-     * Returns the innermost element of a DOM tree as determined by a simple
-     * depth-first search.
-     *
-     * @param element {Element} Root element
-     * @return {Element} innermost element
-     * @internal
-     */
-    __getInnermostElement : function(element)
-    {
-      if (element.childNodes.length == 0) {
-        return element;
-      }
-      for (var i=0,l=element.childNodes.length; i<l; i++) {
-        if (element.childNodes[i].nodeType === 1) {
-          return this.__getInnermostElement(element.childNodes[i]);
-        }
-      }
-      return element;
     },
 
 
@@ -280,9 +143,7 @@ qx.Bootstrap.define("qx.module.Manipulating", {
      * @return {q} The collection for chaining
      */
     remove : function() {
-      for (var i=0; i < this.length; i++) {
-        qx.dom.Element.remove(this[i]);
-      };
+      jQuery.fn.remove.call(this);
       return this;
     },
 
@@ -294,9 +155,7 @@ qx.Bootstrap.define("qx.module.Manipulating", {
      * @return {q} The collection for chaining
      */
     empty : function() {
-      for (var i=0; i < this.length; i++) {
-        this[i].innerHTML = "";
-      };
+      jQuery.fn.empty.call(this);
       return this;
     },
 
@@ -307,29 +166,15 @@ qx.Bootstrap.define("qx.module.Manipulating", {
      * array of elements.
      *
      * @attach{q}
-     * @param args {String[]|Element[]} HTML string(s) or DOM element(s)
+     * @param content {String[]|Element[]} HTML string(s) or DOM element(s)
      * @return {q} The collection for chaining
      */
-    before : function(args) {
-      if (!qx.lang.Type.isArray(args)) {
-        args = [args];
+    before : function(content) {
+      var tmp = jQuery(this)
+      if (!jQuery.isArray(content)) {
+        content = [content];
       }
-      var fragment = document.createDocumentFragment();
-      qx.bom.Html.clean(args, document, fragment);
-      this.forEach(function(item, index) {
-        var kids = qx.lang.Array.cast(fragment.childNodes, Array);
-        for (var i=0,l=kids.length; i<l; i++) {
-          var child;
-          if (index < this.length - 1) {
-            child = kids[i].cloneNode(true)
-          }
-          else {
-            child = kids[i];
-          }
-          item.parentNode.insertBefore(child, item);
-        }
-      }, this);
-
+      jQuery.fn.before.apply(tmp, content);
       return this;
     },
 
@@ -340,29 +185,15 @@ qx.Bootstrap.define("qx.module.Manipulating", {
      * array of elements.
      *
      * @attach{q}
-     * @param args {String[]|Element[]} HTML string(s) or DOM element(s)
+     * @param content {String[]|Element[]} HTML string(s) or DOM element(s)
      * @return {q} The collection for chaining
      */
-    after : function(args) {
-      if (!qx.lang.Type.isArray(args)) {
-        args = [args];
+    after : function(content) {
+      var tmp = jQuery(this)
+      if (!jQuery.isArray(content)) {
+        content = [content];
       }
-      var fragment = document.createDocumentFragment();
-      qx.bom.Html.clean(args, document, fragment);
-      this.forEach(function(item, index) {
-        var kids = qx.lang.Array.cast(fragment.childNodes, Array);
-        for (var i=kids.length-1; i>=0; i--) {
-          var child;
-          if (index < this.length - 1) {
-            child = kids[i].cloneNode(true)
-          }
-          else {
-            child = kids[i];
-          }
-          item.parentNode.insertBefore(child, item.nextSibling);
-        }
-      }, this);
-
+      jQuery.fn.after.apply(tmp, content);
       return this;
     },
 
@@ -373,19 +204,8 @@ qx.Bootstrap.define("qx.module.Manipulating", {
      * @attach{q}
      * @return {Number} Current left scroll position
      */
-    getScrollLeft : function()
-    {
-      var obj = this[0];
-      if (!obj) {
-        return null;
-      }
-
-      var Node = qx.dom.Node;
-      if (Node.isWindow(obj) || Node.isDocument(obj)) {
-        return qx.bom.Viewport.getScrollLeft();
-      }
-
-      return obj.scrollLeft;
+    getScrollLeft : function() {
+      return jQuery.fn.scrollLeft.call(this);
     },
 
 
@@ -395,19 +215,8 @@ qx.Bootstrap.define("qx.module.Manipulating", {
      * @attach{q}
      * @return {Number} Current top scroll position
      */
-    getScrollTop : function()
-    {
-      var obj = this[0];
-      if (!obj) {
-        return null;
-      }
-
-      var Node = qx.dom.Node;
-      if (Node.isWindow(obj) || Node.isDocument(obj)) {
-        return qx.bom.Viewport.getScrollTop();
-      }
-
-      return obj.scrollTop;
+    getScrollTop : function() {
+      return jQuery.fn.scrollTop.call(this);
     },
 
 
@@ -418,23 +227,8 @@ qx.Bootstrap.define("qx.module.Manipulating", {
      * @param value {Number} Left scroll position
      * @return {q} The collection for chaining
      */
-    setScrollLeft : function(value)
-    {
-      var Node = qx.dom.Node;
-
-      for (var i=0, l=this.length, obj; i<l; i++)
-      {
-        obj = this[i];
-
-        if (Node.isElement(obj)) {
-          obj.scrollLeft = value;
-        } else if (Node.isWindow(obj)) {
-          obj.scrollTo(value, this.getScrollTop(obj));
-        } else if (Node.isDocument(obj)) {
-          Node.getWindow(obj).scrollTo(value, this.getScrollTop(obj));
-        }
-      }
-
+    setScrollLeft : function(value) {
+      jQuery.fn.scrollLeft.call(this, value);
       return this;
     },
 
@@ -446,23 +240,8 @@ qx.Bootstrap.define("qx.module.Manipulating", {
      * @param value {Number} Top scroll position
      * @return {q} The collection for chaining
      */
-    setScrollTop : function(value)
-    {
-      var Node = qx.dom.Node;
-
-      for (var i=0, l=this.length, obj; i<l; i++)
-      {
-        obj = this[i];
-
-        if (Node.isElement(obj)) {
-          obj.scrollTop = value;
-        } else if (Node.isWindow(obj)) {
-          obj.scrollTo(this.getScrollLeft(obj), value);
-        } else if (Node.isDocument(obj)) {
-          Node.getWindow(obj).scrollTo(this.getScrollLeft(obj), value);
-        }
-      }
-
+    setScrollTop : function(value) {
+      jQuery.fn.scrollTop.call(this, value);
       return this;
     },
 

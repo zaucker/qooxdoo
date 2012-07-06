@@ -322,7 +322,7 @@ testrunner.define({
     q.create('<h2>Bar</h2><h3>Baz</h3>').insertBefore("#sandbox h1");
     this.assertEquals(2, q("#sandbox h2 + h3 + h1").length);
   },
-  
+
   "test wrap with HTML string" : function()
   {
     var test = q.create('<span class="baz">Inner</span><span class="baz">Inner</span>')
@@ -330,7 +330,7 @@ testrunner.define({
     test.wrap('<div class="foo"><p class="bar"/></div>');
     this.assertEquals(2, q("#sandbox .foo .bar .baz").length);
   },
-  
+
   "test wrap with element" : function()
   {
     var test = q.create('<span class="baz">Inner</span><span class="baz">Inner</span>')
@@ -339,16 +339,16 @@ testrunner.define({
     test.wrap(wrapper[0]);
     this.assertEquals(2, q("#sandbox .foo .bar .baz").length);
   },
-  
+
   "test wrap with selector" : function()
   {
-    var test = q.create('<span class="baz">Inner</span><span class="baz">Inner</span>')
+    var test = q.create('<span class="baz">Inner1</span><span class="baz">Inner2</span>')
     .appendTo('#sandbox');
     q.create('<div class="foo"><p class="bar"/></div>').appendTo('#sandbox');
     test.wrap('.foo');
     this.assertEquals(2, q('#sandbox .foo .bar .baz').length);
   },
-  
+
   "test wrap with list of elements" : function()
   {
     var test = q.create('<span class="baz">Inner</span><span class="baz">Inner</span>')
@@ -357,7 +357,7 @@ testrunner.define({
     test.wrap([wrapper[0]]);
     this.assertEquals(2, q('#sandbox .foo .bar .baz').length);
   },
-  
+
   "test wrap with collection" : function()
   {
     var test = q.create('<span class="baz">Inner</span><span class="baz">Inner</span>')
@@ -860,7 +860,7 @@ testrunner.define({
     this.assertEquals("15px", result["margin-bottom"]);
     test.remove();
   },
-  
+
   testPrefixedProperties : function() {
     var props = {
       "css.appearance" : ["appearance", "searchfield"],
@@ -870,7 +870,7 @@ testrunner.define({
       "css.usermodify" : ["userModify", "read-only"],
       "css.boxsizing" : ["boxSizing", "border-box"]
     }
-    
+
     for (var envKey in props) {
       var style = props[envKey][0];
       var envVal = q.env.get(envKey);
@@ -880,7 +880,7 @@ testrunner.define({
       var value = props[envKey][1];
       var test = q.create("<div>affe</div>").appendTo(this.sandbox[0])
       .setStyle(style, value);
-      
+
       this.assertEquals(value, test.getStyle(style));
     }
   },
