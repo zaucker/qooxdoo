@@ -141,8 +141,8 @@ qx.Bootstrap.define("q", {
     }
 
     if (qx.Bootstrap.isString(selector)) {
-      selector = qx.bom.Selector.query(selector, context);
-    } else if (!(qx.Bootstrap.isArray(selector))) {
+      selector = jQuery.find(selector, context);
+    } else if (!(jQuery.isArray(selector))) {
       selector = [selector];
     }
     return q.$init(selector);
