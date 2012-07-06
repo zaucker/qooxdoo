@@ -34,7 +34,7 @@ qx.Bootstrap.define("qx.module.Css", {
      */
     setStyle : function(name, value) {
       name = qx.bom.Style.getPropertyName(name);
-      jQuery.prototype.css.call(this, name, value);
+      jQuery.fn.css.call(this, name, value);
       return this;
     },
 
@@ -49,7 +49,7 @@ qx.Bootstrap.define("qx.module.Css", {
      */
     getStyle : function(name) {
       name = qx.bom.Style.getPropertyName(name);
-      return jQuery.prototype.css.call(this, name);
+      return jQuery.fn.css.call(this, name);
     },
 
 
@@ -93,7 +93,7 @@ qx.Bootstrap.define("qx.module.Css", {
      * @return {q} The collection for chaining
      */
     addClass : function(name) {
-      jQuery.prototype.addClass.call(this, name);
+      jQuery.fn.addClass.call(this, name);
       return this;
     },
 
@@ -121,7 +121,7 @@ qx.Bootstrap.define("qx.module.Css", {
      * @return {q} The collection for chaining
      */
     removeClass : function(name) {
-      jQuery.prototype.removeClass.call(this);
+      jQuery.fn.removeClass.call(this);
       return this;
     },
 
@@ -149,7 +149,7 @@ qx.Bootstrap.define("qx.module.Css", {
      * @return {Boolean} <code>true</code> if the first item has the given class name
      */
     hasClass : function(name) {
-      return jQuery.prototype.hasClass.call(this, name);
+      return jQuery.fn.hasClass.call(this, name);
     },
 
 
@@ -160,7 +160,7 @@ qx.Bootstrap.define("qx.module.Css", {
      * @return {String} Class name
      */
     getClass : function() {
-      return jQuery.prototype.attr.call(this, "class");
+      return jQuery.fn.attr.call(this, "class");
     },
 
 
@@ -172,7 +172,7 @@ qx.Bootstrap.define("qx.module.Css", {
      * @return {q} The collection for chaining
      */
     toggleClass : function(name) {
-      jQuery.prototype.toggleClass.call(this, name);
+      jQuery.fn.toggleClass.call(this, name);
       return this;
     },
 
@@ -237,7 +237,7 @@ qx.Bootstrap.define("qx.module.Css", {
      * of the element relative to the document.
      */
     getOffset : function() {
-      var offset = jQuery.prototype.offset.call(this);
+      var offset = jQuery.fn.offset.call(this);
       offset.bottom = offset.top + this.getHeight();
       offset.right = offset.left + this.getWidth();
       return offset;
@@ -252,7 +252,7 @@ qx.Bootstrap.define("qx.module.Css", {
      * @return {Number} Computed content height
      */
     getContentHeight : function() {
-      return jQuery.prototype.height.call(this);
+      return jQuery.fn.height.call(this);
     },
 
 
@@ -264,7 +264,7 @@ qx.Bootstrap.define("qx.module.Css", {
      * @return {Number} Computed content width
      */
     getContentWidth : function() {
-      return jQuery.prototype.width.call(this);
+      return jQuery.fn.width.call(this);
     },
 
 

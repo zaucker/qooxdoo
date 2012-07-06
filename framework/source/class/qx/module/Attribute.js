@@ -47,7 +47,7 @@ qx.Bootstrap.define("qx.module.Attribute", {
      * @return {String|null} HTML content or null if the collection is empty
      */
     getHtml : function() {
-      return jQuery.prototype.html.call(this);
+      return jQuery.fn.html.call(this);
     },
 
 
@@ -59,7 +59,7 @@ qx.Bootstrap.define("qx.module.Attribute", {
      * @return {q} The collection for chaining
      */
     setHtml : function(html) {
-      jQuery.prototype.html.call(this, html);
+      jQuery.fn.html.call(this, html);
       return this;
     },
 
@@ -73,7 +73,7 @@ qx.Bootstrap.define("qx.module.Attribute", {
      * @return {q} The collection for chaining
      */
     setAttribute : function(name, value) {
-      jQuery.prototype.attr.call(this, name, value);
+      jQuery.fn.attr.call(this, name, value);
       return this;
     },
 
@@ -87,7 +87,7 @@ qx.Bootstrap.define("qx.module.Attribute", {
      * @return {var} Attribute value
      */
     getAttribute : function(name) {
-      var value = jQuery.prototype.attr.call(this, name);
+      var value = jQuery.fn.attr.call(this, name);
       if (qx.module.Attribute.__bools[value]) {
         return value == name;
       }
@@ -103,7 +103,7 @@ qx.Bootstrap.define("qx.module.Attribute", {
      * @return {q} The collection for chaining
      */
     removeAttribute : function(name) {
-      jQuery.prototype.removeAttr.call(this, name);
+      jQuery.fn.removeAttr.call(this, name);
       return this;
     },
 
@@ -163,7 +163,7 @@ qx.Bootstrap.define("qx.module.Attribute", {
      * @return {q} The collection for chaining
      */
     setProperty : function(name, value) {
-      jQuery.prototype.prop.call(this, name, value);
+      jQuery.fn.prop.call(this, name, value);
       return this;
     },
 
@@ -177,7 +177,7 @@ qx.Bootstrap.define("qx.module.Attribute", {
      * @return {var} Property value
      */
     getProperty : function(name) {
-      return jQuery.prototype.prop.call(this, name)
+      return jQuery.fn.prop.call(this, name)
     },
 
 
@@ -222,7 +222,7 @@ qx.Bootstrap.define("qx.module.Attribute", {
      * @return {String|Array}
      */
     getValue : function() {
-      return jQuery.prototype.val.call(this);
+      return jQuery.fn.val.call(this);
     },
 
 
@@ -241,7 +241,7 @@ qx.Bootstrap.define("qx.module.Attribute", {
      * @return {q} The collection for chaining
      */
     setValue : function(value) {
-      jQuery.prototype.val.call(this, value);
+      jQuery.fn.val.call(this, value);
       return this;
     }
   },
