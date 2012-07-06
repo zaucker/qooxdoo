@@ -444,11 +444,11 @@ testrunner.define({
     var test = q.create('<div id="ancestor"><div id="parent"><div id="child"></div></div></div>');
     test.appendTo(this.sandbox[0]);
     var ancestors = q("#child").getAncestors();
-    //parent ancestor sandbox body documentElement document
-    this.assertEquals(6, ancestors.length);
+
+    //parent ancestor sandbox body documentElement
+    this.assertEquals(5, ancestors.length);
 
     this.assertEquals("parent", ancestors[0].id);
-    this.assertEquals(document, ancestors[5]);
     test.remove();
   },
 
@@ -720,10 +720,10 @@ testrunner.define({
     test.appendTo(this.sandbox[0]);
     var res = q("#sandbox .last").getPrevUntil(".first");
     this.assertEquals(4, res.length);
-    this.assertEquals("LI", res[0].tagName);
-    this.assertEquals("LI", res[1].tagName);
-    this.assertEquals("P", res[2].tagName);
-    this.assertEquals("P", res[3].tagName);
+    this.assertEquals("P", res[0].tagName);
+    this.assertEquals("P", res[1].tagName);
+    this.assertEquals("LI", res[2].tagName);
+    this.assertEquals("LI", res[3].tagName);
     test.remove();
   },
 

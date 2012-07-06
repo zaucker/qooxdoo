@@ -18,12 +18,6 @@
 
 ************************************************************************ */
 
-/* ************************************************************************
-#require(qx.dom.Hierarchy#getSiblings)
-#require(qx.dom.Hierarchy#getNextSiblings)
-#require(qx.dom.Hierarchy#getPreviousSiblings)
-************************************************************************ */
-
 /**
  * DOM traversal module
  */
@@ -54,21 +48,13 @@ qx.Bootstrap.define("qx.module.Traversing", {
      * @return {q} Collection containing the child elements
      */
     getChildren : function(selector) {
-      var children = [];
-      for (var i=0; i < this.length; i++) {
-        var found = qx.dom.Hierarchy.getChildElements(this[i]);
-        if (selector) {
-          found = qx.bom.Selector.matches(selector, found);
-        }
-        children = children.concat(found);
-      };
-      return q.$init(children);
+      return q.$init(jQuery(this).children(selector).toArray());
     },
 
 
     /**
      * Executes the provided callback function once for each item in the
-     * collection. @see qx.type.BaseArray#forEach
+     * collection.
      *
      * @attach {q}
      * @param fn {Function} Callback function
@@ -125,15 +111,7 @@ qx.Bootstrap.define("qx.module.Traversing", {
      * @return {q} Collection containing the parent elements
      */
     getParents : function(selector) {
-      var parents = [];
-      for (var i=0; i < this.length; i++) {
-        var found = qx.dom.Element.getParentElement(this[i]);
-        if (selector) {
-          found = qx.bom.Selector.matches(selector, [found]);
-        }
-        parents = parents.concat(found);
-      };
-      return q.$init(parents);
+      return q.$init(jQuery(this).parent(selector));
     },
 
 
@@ -148,7 +126,7 @@ qx.Bootstrap.define("qx.module.Traversing", {
      * @return {q} Collection containing the ancestor elements
      */
     getAncestors : function(filter) {
-      return this.__getAncestors(null, filter);
+      return q.$init(jQuery(this).parents(filter));
     },
 
 
@@ -166,37 +144,7 @@ qx.Bootstrap.define("qx.module.Traversing", {
      * @return {q} Collection containing the ancestor elements
      */
     getAncestorsUntil : function(selector, filter) {
-      return this.__getAncestors(selector, filter);
-    },
-
-
-    /**
-     * Internal helper for getAncestors and getAncestorsUntil
-     *
-     * @attach {q}
-     * @param selector {String} Selector that indicates where to stop including
-     * ancestor elements
-     * @param filter {String?null} Optional selector to match
-     * @return {q} Collection containing the ancestor elements
-     * @internal
-     */
-    __getAncestors : function(selector, filter) {
-      var ancestors = [];
-      for (var i=0; i < this.length; i++) {
-        var parent = qx.dom.Element.getParentElement(this[i]);
-        while (parent) {
-          var found = [parent];
-          if (selector && qx.bom.Selector.matches(selector, found).length > 0) {
-            break;
-          }
-          if (filter) {
-            found = qx.bom.Selector.matches(filter, found);
-          }
-          ancestors = ancestors.concat(found);
-          parent = qx.dom.Element.getParentElement(parent);
-        }
-      }
-      return q.$init(ancestors);
+      return q.$init(jQuery(this).parentsUntil(selector, filter));
     },
 
 
@@ -211,25 +159,7 @@ qx.Bootstrap.define("qx.module.Traversing", {
      * @return {q} New collection containing the closest matching ancestors
      */
     getClosest : function(selector) {
-      var closest = [];
-
-      var findClosest = function findClosest(current) {
-        var found = qx.bom.Selector.matches(selector, current);
-        if (found.length) {
-          closest.push(found[0]);
-        } else {
-          current = current.getParents(); // One up
-          if(current[0] && current[0].parentNode) {
-            findClosest(current);
-          }
-        }
-      };
-
-      for (var i=0; i < this.length; i++) {
-        findClosest(q(this[i]));
-      };
-
-      return q.$init(closest);
+      return q.$init(jQuery(this).closest(selector));
     },
 
 
@@ -243,11 +173,7 @@ qx.Bootstrap.define("qx.module.Traversing", {
      * @return {q} New collection containing the matching child elements
      */
     find : function(selector) {
-      var found = [];
-      for (var i=0; i < this.length; i++) {
-        found = found.concat(qx.bom.Selector.query(selector, this[i]));
-      };
-      return q.$init(found);
+      return q.$init(jQuery(this).find(selector));
     },
 
 
@@ -261,20 +187,10 @@ qx.Bootstrap.define("qx.module.Traversing", {
      * @return {q} New collection containing the elements that passed the filter
      */
     filter : function(selector) {
-      if (qx.lang.Type.isFunction(selector)) {
+      if (jQuery.isFunction(selector)) {
         return qx.type.BaseArray.prototype.filter.call(this, selector);
       }
-      /*
-       * This works but isn't currently needed:
-      if (qx.dom.Node.isElement(selector)) {
-        for (var i=0; i < this.length; i++) {
-          if (this[i] == selector) {
-            return q.$init([this[i]]);
-          }
-        }
-      }
-      */
-      return q.$init(qx.bom.Selector.matches(selector, this));
+      return q.$init(jQuery.find(selector, null, null, this));
     },
 
 
@@ -286,28 +202,21 @@ qx.Bootstrap.define("qx.module.Traversing", {
      * @return {q} New collection containing the child nodes
      */
     getContents : function() {
-      var found = [];
-      for (var i=0; i < this.length; i++) {
-        found = found.concat(qx.lang.Array.fromCollection(this[i].childNodes));
-      }
-      return q.$init(found);
+      return q.$init(jQuery(this).contents());
     },
 
 
     /**
      * Checks if at least one element in the collection passes the provided
      * filter. This can be either a selector expression or a filter
-     * function @see qx.type.BaseArray#filter
+     * function.
      *
      * @attach {q}
      * @param selector {String|Function} Selector expression or filter function
      * @return {Boolean} <code>true</code> if at least one element matches
      */
     is : function(selector) {
-      if (qx.lang.Type.isFunction(selector)) {
-        return this.filter(selector).length > 0;
-      }
-      return !!selector && qx.bom.Selector.matches(selector, this).length > 0;
+      return jQuery.fn.is.call(this, selector)
     },
 
 
@@ -354,14 +263,7 @@ qx.Bootstrap.define("qx.module.Traversing", {
      * @return {q} a new collection containing only elements with matching descendants
      */
     has : function(selector) {
-      var found = [];
-      for (var i=0; i < this.length; i++) {
-        var descendants = qx.bom.Selector.matches(selector, this.eq(i).getContents())
-        if (descendants.length > 0) {
-          found.push(this[i]);
-        }
-      }
-      return q.$init(found);
+      return q.$init(jQuery(this).has(selector));
     },
 
 
@@ -376,11 +278,7 @@ qx.Bootstrap.define("qx.module.Traversing", {
      * @return {q} New set containing next siblings
      */
     getNext : function(selector) {
-      var found = this.map(qx.dom.Hierarchy.getNextElementSibling, qx.dom.Hierarchy);
-      if (selector) {
-        found = qx.bom.Selector.matches(selector, found);
-      }
-      return found;
+      return q.$init(jQuery(this).next(selector));
     },
 
 
@@ -395,8 +293,7 @@ qx.Bootstrap.define("qx.module.Traversing", {
      * @return {q} New set containing following siblings
      */
     getNextAll : function(selector) {
-      var ret = qx.module.Traversing.__hierarchyHelper(this, "getNextSiblings", selector);
-      return q.$init(ret);
+      return q.$init(jQuery(this).nextAll(selector));
     },
 
 
@@ -410,18 +307,7 @@ qx.Bootstrap.define("qx.module.Traversing", {
      * @return {q} New set containing following siblings
      */
     getNextUntil : function(selector) {
-      var found = [];
-      this.forEach(function(item, index) {
-        var nextSiblings = qx.dom.Hierarchy.getNextSiblings(item);
-        for (var i=0, l=nextSiblings.length; i<l; i++) {
-          if (qx.bom.Selector.matches(selector, [nextSiblings[i]]).length > 0) {
-            break;
-          }
-          found.push(nextSiblings[i]);
-        }
-      });
-
-      return q.$init(found);
+      return q.$init(jQuery(this).nextUntil(selector));
     },
 
 
@@ -436,11 +322,7 @@ qx.Bootstrap.define("qx.module.Traversing", {
      * @return {q} New set containing previous siblings
      */
     getPrev : function(selector) {
-      var found = this.map(qx.dom.Hierarchy.getPreviousElementSibling, qx.dom.Hierarchy);
-      if (selector) {
-        found = qx.bom.Selector.matches(selector, found);
-      }
-      return found;
+      return q.$init(jQuery(this).prev(selector));
     },
 
 
@@ -455,8 +337,7 @@ qx.Bootstrap.define("qx.module.Traversing", {
      * @return {q} New set containing preceding siblings
      */
     getPrevAll : function(selector) {
-      var ret = qx.module.Traversing.__hierarchyHelper(this, "getPreviousSiblings", selector);
-      return q.$init(ret);
+      return q.$init(jQuery(this).prevAll(selector));
     },
 
 
@@ -470,18 +351,7 @@ qx.Bootstrap.define("qx.module.Traversing", {
      * @return {q} New set containing preceding siblings
      */
     getPrevUntil : function(selector) {
-      var found = [];
-      this.forEach(function(item, index) {
-        var previousSiblings = qx.dom.Hierarchy.getPreviousSiblings(item);
-        for (var i=0, l=previousSiblings.length; i<l; i++) {
-          if (qx.bom.Selector.matches(selector, [previousSiblings[i]]).length > 0) {
-            break;
-          }
-          found.push(previousSiblings[i]);
-        }
-      });
-
-      return q.$init(found);
+      return q.$init(jQuery(this).prevUntil(selector));
     },
 
 
@@ -496,28 +366,26 @@ qx.Bootstrap.define("qx.module.Traversing", {
      * @return {q} New set containing sibling elements
      */
     getSiblings : function(selector) {
-      var ret = qx.module.Traversing.__hierarchyHelper(this, "getSiblings", selector);
-      return q.$init(ret);
+      return q.$init(jQuery(this).siblings(selector));
     },
 
 
     /**
      * Remove elements from the collection that do not pass the given filter.
-     * This can be either a selector expression or a filter function
-     * @see qx.type.BaseArray#filter
+     * This can be either a selector expression or a filter function.
      *
      * @attach {q}
      * @param selector {String|Function} Selector or filter function
      * @return {q} Reduced collection
      */
     not : function(selector) {
-      if (qx.lang.Type.isFunction(selector)) {
+      if (jQuery.isFunction(selector)) {
         return this.filter(function(item, index, obj) {
           return !selector(item, index, obj);
         });
       }
 
-      var res = qx.bom.Selector.matches(selector, this);
+      var res = jQuery.find(selector, null, null, this);
       return this.filter(function(value) {
         return res.indexOf(value) === -1;
       });
@@ -532,7 +400,7 @@ qx.Bootstrap.define("qx.module.Traversing", {
      * @return {q} New collection containing offset parents
      */
     getOffsetParent : function() {
-      return this.map(qx.bom.element.Location.getOffsetParent);
+      return q.$init(jQuery(this).offsetParent());
     },
 
 
@@ -544,7 +412,7 @@ qx.Bootstrap.define("qx.module.Traversing", {
      * @return {Boolean} <code>true</code> if the object is a DOM element
      */
     isElement : function(element) {
-      return qx.dom.Node.isElement(element);
+      return !!(element && element.nodeType === 1);
     },
 
 
@@ -556,7 +424,7 @@ qx.Bootstrap.define("qx.module.Traversing", {
      * @return {Boolean} <code>true</code> if the object is a DOM node
      */
     isNode : function(node) {
-      return qx.dom.Node.isNode(node);
+      return !!(node && node.nodeType != null);
     },
 
 
@@ -568,7 +436,7 @@ qx.Bootstrap.define("qx.module.Traversing", {
      * @return {Boolean} <code>true</code> if the object is a DOM document
      */
     isDocument : function(node) {
-      return qx.dom.Node.isDocument(node);
+      return !!(node && node.nodeType === 9);
     },
 
 
@@ -580,7 +448,18 @@ qx.Bootstrap.define("qx.module.Traversing", {
      * @return {Window} the <code>defaultView</code> for the given node
      */
     getWindow : function(node) {
-      return qx.dom.Node.getWindow(node);
+      // is a window already
+      if (node.nodeType == null) {
+        return node;
+      }
+
+      // jump to document
+      if (node.nodeType !== 9) {
+        node = node.ownerDocument;
+      }
+
+      // jump to window
+      return node.defaultView || node.parentWindow;
     },
 
 
@@ -592,42 +471,9 @@ qx.Bootstrap.define("qx.module.Traversing", {
      * @return {Document|null} The document of the given DOM node
      */
     getDocument : function(node) {
-      return qx.dom.Node.getDocument(node);
-    },
-
-
-    /**
-     * Helper function that iterates over a set of items and applies the given
-     * qx.dom.Hierarchy method to each entry, storing the results in a new Array.
-     * Duplicates are removed and the items are filtered if a selector is
-     * provided.
-     *
-     * @attach{q}
-     * @param collection {Array} Collection to iterate over (any Array-like object)
-     * @param method {String} Name of the qx.dom.Hierarchy method to apply
-     * @param selector {String?} Optional selector that elements to be included
-     * must match
-     * @return {Array} Result array
-     * @internal
-     */
-    __hierarchyHelper : function(collection, method, selector)
-    {
-      // Iterate ourself, as we want to directly combine the result
-      var all = [];
-      var Hierarchy = qx.dom.Hierarchy;
-      for (var i=0, l=collection.length; i<l; i++) {
-        all.push.apply(all, Hierarchy[method](collection[i]));
-      }
-
-      // Remove duplicates
-      var ret = qx.lang.Array.unique(all);
-
-      // Post reduce result by selector
-      if (selector) {
-        ret = qx.bom.Selector.matches(selector, ret);
-      }
-
-      return ret;
+      return node.nodeType === 9 ? node : // is document already
+        node.ownerDocument || // is DOM node
+        node.document; // is window
     }
   },
 
