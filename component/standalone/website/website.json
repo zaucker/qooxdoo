@@ -62,6 +62,7 @@
       "extend" : ["website-libraries"],
 
       "=include" : "${Q_INCLUDES}",
+      "exclude" : ["jQuery"],
 
       "environment" :
       {
