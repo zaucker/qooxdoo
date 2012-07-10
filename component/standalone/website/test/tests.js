@@ -885,6 +885,59 @@ testrunner.define({
     }
   },
 
+  testSpecialClip : function() {
+    this.sandbox.setStyle("clip", {
+      left: 10,
+      top: 20,
+      width: 100,
+      height: 200
+    });
+
+    this.assertEquals(10, this.sandbox.getStyle("clip").left);
+    this.assertEquals(20, this.sandbox.getStyle("clip").top);
+    this.assertEquals(100, this.sandbox.getStyle("clip").width);
+    this.assertEquals(200, this.sandbox.getStyle("clip").height);
+  },
+
+  testSpecialCursor : function() {
+    var cursor = [
+      "default", "crosshair", "pointer", "move", "n-resize", "nesw-resize", "nwse-resize",
+      "ne-resize", "e-resize", "se-resize", "s-resize", "sw-resize",
+      "w-resize", "nw-resize", "text", "wait", "help", "progress"
+    ];
+    for (var i=0; i < cursor.length; i++) {
+      this.sandbox.setStyle("cursor", cursor[i]);
+      this.assertEquals(cursor[i], this.sandbox.getStyle("cursor"));
+    };
+  },
+
+  testSpecialOpacity : function() {
+    this.sandbox.setStyle("opacity", 0.5);
+    this.assertEquals(0.5, this.sandbox.getStyle("opacity"));
+  },
+
+  testSpecialBoxSizing : function() {
+    this.sandbox.setStyle("boxSizing", "border-box");
+    this.assertEquals("border-box", this.sandbox.getStyle("boxSizing"));
+    this.sandbox.setStyle("boxSizing", "content-box");
+    this.assertEquals("content-box", this.sandbox.getStyle("boxSizing"));
+  },
+
+  testSpecialOverflow : function() {
+    this.sandbox.setStyle("overflowY", "hidden");
+    this.assertEquals("hidden", this.sandbox.getStyle("overflowY"));
+    this.sandbox.setStyle("overflowY", "scroll");
+    this.assertEquals("scroll", this.sandbox.getStyle("overflowY"));
+  },
+
+
+  testGetComputedStyle : function() {
+    this.sandbox.append(q.create("<div></div>"));
+    this.sandbox.setStyle("width", "10px");
+    this.assertEquals("10px", this.sandbox.getChildren().getStyle("width"));
+  },
+
+
   testClass : function() {
     var test = q.create("<div/><div/>");
     test.addClass("test");
