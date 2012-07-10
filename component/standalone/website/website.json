@@ -187,6 +187,7 @@
       },
 
       "include" : "${Q_INCLUDES}",
+      "exclude" : ["jQuery"],
 
       "compile-options" :
       {
