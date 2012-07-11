@@ -311,9 +311,9 @@ qx.Bootstrap.define("qx.Bootstrap",
 
       // Use helper function/class to save the unnecessary constructor call while
       // setting up inheritance.
-      var helper = new Function;
+      var helper = new Function();
       helper.prototype = superproto;
-      var proto = new helper;
+      var proto = new helper();
 
       // Apply prototype to new helper instance
       clazz.prototype = proto;
@@ -326,7 +326,8 @@ qx.Bootstrap.define("qx.Bootstrap",
         - Store base constructor to constructor-
         - Store reference to extend class
       */
-      construct.base = clazz.superclass = superClass;
+      construct.base = superClass;
+      clazz.superclass = superClass;
 
       /*
         - Store statics/constructor onto constructor/prototype
@@ -695,7 +696,6 @@ qx.Bootstrap.define("qx.Bootstrap",
      * @param message {var} Any number of arguments supported. An argument may
      *   have any JavaScript data type. All data is serialized immediately and
      *   does not keep references to other objects.
-     * @return {void}
      */
     debug : function(object, message) {
       qx.Bootstrap.$$logs.push(["debug", arguments]);
@@ -709,7 +709,6 @@ qx.Bootstrap.define("qx.Bootstrap",
      * @param message {var} Any number of arguments supported. An argument may
      *   have any JavaScript data type. All data is serialized immediately and
      *   does not keep references to other objects.
-     * @return {void}
      */
     info : function(object, message) {
       qx.Bootstrap.$$logs.push(["info", arguments]);
@@ -723,7 +722,6 @@ qx.Bootstrap.define("qx.Bootstrap",
      * @param message {var} Any number of arguments supported. An argument may
      *   have any JavaScript data type. All data is serialized immediately and
      *   does not keep references to other objects.
-     * @return {void}
      */
     warn : function(object, message) {
       qx.Bootstrap.$$logs.push(["warn", arguments]);
@@ -737,7 +735,6 @@ qx.Bootstrap.define("qx.Bootstrap",
      * @param message {var} Any number of arguments supported. An argument may
      *   have any JavaScript data type. All data is serialized immediately and
      *   does not keep references to other objects.
-     * @return {void}
      */
     error : function(object, message) {
       qx.Bootstrap.$$logs.push(["error", arguments]);

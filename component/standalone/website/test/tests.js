@@ -860,6 +860,30 @@ testrunner.define({
     this.assertEquals("15px", result["margin-bottom"]);
     test.remove();
   },
+  
+  testSpecialProperties : function() {
+    var props = {
+      "css.appearance" : ["appearance", "searchfield"],
+      "css.textoverflow" : ["textOverflow", "ellipsis"],
+      "css.userselect" : ["userSelect", q.env.get("css.userselect.none")],
+      "css.float" : ["float", "right"],
+      "css.usermodify" : ["userModify", "read-only"],
+      "css.boxsizing" : ["boxSizing", "border-box"]
+    }
+    
+    for (var envKey in props) {
+      var style = props[envKey][0];
+      var envVal = q.env.get(envKey);
+      if (!envVal) {
+        continue;
+      }
+      var value = props[envKey][1];
+      var test = q.create("<div>affe</div>").appendTo(this.sandbox[0])
+      .setStyle(style, value);
+      
+      this.assertEquals(value, test.getStyle(style));
+    }
+  },
 
   testPrefixedProperties : function() {
     var props = {
@@ -2165,6 +2189,11 @@ testrunner.define({
 
   testTrimRight : function() {
     this.assertEquals("    abc", "    abc    ".trimRight());
+  },
+
+
+  testTrim : function() {
+    this.assertEquals("abc", "    abc    ".trim());
   }
 });
 
@@ -2326,9 +2355,9 @@ testrunner.define({
 
 
   testTransformOrigin : function() {
-    this.sandbox.setTransformOrigin("30% 50%");
+    this.sandbox.setTransformOrigin("30% 10%");
     if (q.env.get("css.transform") != null) {
-      this.assertEquals("30% 50%", this.sandbox.getTransformOrigin());
+      this.assertEquals("30% 10%", this.sandbox.getTransformOrigin());
     }
   },
 

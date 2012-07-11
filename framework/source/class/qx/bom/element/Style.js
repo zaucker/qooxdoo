@@ -64,29 +64,21 @@
 #require(qx.bom.element.Cursor#set)
 #require(qx.bom.element.Opacity#set)
 #require(qx.bom.element.BoxSizing#set)
-#require(qx.bom.element.Overflow#setY)
-#require(qx.bom.element.Overflow#setX)
 
 #require(qx.bom.element.Clip#get)
 #require(qx.bom.element.Cursor#get)
 #require(qx.bom.element.Opacity#get)
 #require(qx.bom.element.BoxSizing#get)
-#require(qx.bom.element.Overflow#getX)
-#require(qx.bom.element.Overflow#getY)
 
 #require(qx.bom.element.Clip#reset)
 #require(qx.bom.element.Cursor#reset)
 #require(qx.bom.element.Opacity#reset)
 #require(qx.bom.element.BoxSizing#reset)
-#require(qx.bom.element.Overflow#resetX)
-#require(qx.bom.element.Overflow#resetY)
 
 #require(qx.bom.element.Clip#compile)
 #require(qx.bom.element.Cursor#compile)
 #require(qx.bom.element.Opacity#compile)
 #require(qx.bom.element.BoxSizing#compile)
-#require(qx.bom.element.Overflow#compileX)
-#require(qx.bom.element.Overflow#compileY)
 
 ************************************************************************ */
 
@@ -106,6 +98,54 @@ qx.Bootstrap.define("qx.bom.element.Style",
 
   statics :
   {
+    /**
+     * Detect vendor specific properties.
+     */
+    __detectVendorProperties : function()
+    {
+      var styleNames = {
+        "appearance" : qx.core.Environment.get("css.appearance"),
+        "userSelect" : qx.core.Environment.get("css.userselect"),
+        "textOverflow" : qx.core.Environment.get("css.textoverflow"),
+        "borderImage" : qx.core.Environment.get("css.borderimage"),
+        "float" : qx.core.Environment.get("css.float"),
+        "userModify" : qx.core.Environment.get("css.usermodify"),
+        "boxSizing" : qx.core.Environment.get("css.boxsizing")
+      };
+
+      this.__cssNames = {};
+      for (var key in qx.lang.Object.clone(styleNames)) {
+        if (!styleNames[key]) {
+          delete styleNames[key];
+        }
+        else {
+          this.__cssNames[key] = key == "float" ? "float" :
+            qx.lang.String.hyphenate(styleNames[key]);
+        }
+      }
+
+      this.__styleNames = styleNames;
+    },
+
+
+    /**
+     * Gets the (possibly vendor-prefixed) name of a style property and stores
+     * it to avoid multiple checks.
+     *
+     * @param name {String} Style property name to check
+     * @return {String|null} The client-specific name of the property, or
+     * <code>null</code> if it's not supported.
+     */
+    __getStyleName : function(name)
+    {
+      var styleName = qx.bom.Style.getPropertyName(name);
+      if (styleName) {
+        this.__styleNames[name] = styleName;
+      }
+      return styleName;
+    },
+
+
     /**
      * Mshtml has proprietary pixel* properties for locations and dimensions
      * which return the pixel value. Used by getComputed() in mshtml variant.
@@ -132,19 +172,7 @@ qx.Bootstrap.define("qx.bom.element.Style",
       clip : qx.bom.element.Clip,
       cursor : qx.bom.element.Cursor,
       opacity : qx.bom.element.Opacity,
-      boxSizing : qx.bom.element.BoxSizing,
-      overflowX : {
-        set : qx.lang.Function.bind(qx.bom.element.Overflow.setX, qx.bom.element.Overflow),
-        get : qx.lang.Function.bind(qx.bom.element.Overflow.getX, qx.bom.element.Overflow),
-        reset : qx.lang.Function.bind(qx.bom.element.Overflow.resetX, qx.bom.element.Overflow),
-        compile : qx.lang.Function.bind(qx.bom.element.Overflow.compileX, qx.bom.element.Overflow)
-      },
-      overflowY : {
-        set : qx.lang.Function.bind(qx.bom.element.Overflow.setY, qx.bom.element.Overflow),
-        get : qx.lang.Function.bind(qx.bom.element.Overflow.getY, qx.bom.element.Overflow),
-        reset : qx.lang.Function.bind(qx.bom.element.Overflow.resetY, qx.bom.element.Overflow),
-        compile : qx.lang.Function.bind(qx.bom.element.Overflow.compileY, qx.bom.element.Overflow)
-      }
+      boxSizing : qx.bom.element.BoxSizing
     },
 
 
@@ -165,7 +193,7 @@ qx.Bootstrap.define("qx.bom.element.Style",
     {
       var html = [];
       var special = this.__special;
-      var names = qx.bom.Style.CSSNAMES;
+      var cssNames = this.__cssNames;
       var name, value;
 
       for (name in map)
@@ -177,13 +205,16 @@ qx.Bootstrap.define("qx.bom.element.Style",
         }
 
         // normalize name
-        name = names[name] || name;
+        name = this.__styleNames[name] || this.__getStyleName(name) || name;
 
         // process special properties
         if (special[name]) {
           html.push(special[name].compile(value));
         } else {
-          html.push(qx.lang.String.hyphenate(name), ":", value, ";");
+          if (!cssNames[name]) {
+            cssNames[name] = qx.lang.String.hyphenate(name);
+          }
+          html.push(cssNames[name], ":", value, ";");
         }
       }
 
@@ -201,7 +232,6 @@ qx.Bootstrap.define("qx.bom.element.Style",
      *
      * @param element {Element} The DOM element to modify
      * @param value {String} The full CSS string
-     * @return {void}
      */
     setCss : function(element, value)
     {
@@ -255,7 +285,7 @@ qx.Bootstrap.define("qx.bom.element.Style",
     {
       return (
         this.__special[propertyName] ||
-        qx.bom.Style.STYLENAMES[propertyName] ||
+        this.__styleNames[propertyName] ||
         propertyName in document.documentElement.style
       );
     },
@@ -301,7 +331,7 @@ qx.Bootstrap.define("qx.bom.element.Style",
 
 
       // normalize name
-      name = qx.bom.Style.getPropertyName(name) || name;
+      name = this.__styleNames[name] || this.__getStyleName(name) || name;
 
       // special handling for specific properties
       // through this good working switch this part costs nothing when
@@ -322,7 +352,6 @@ qx.Bootstrap.define("qx.bom.element.Style",
      *    and the value is the value to use.
      * @param smart {Boolean?true} Whether the implementation should automatically use
      *    special implementations for some properties
-     * @return {void}
      */
     setStyles : function(element, styles, smart)
     {
@@ -337,7 +366,7 @@ qx.Bootstrap.define("qx.bom.element.Style",
 
       // inline calls to "set" and "reset" because this method is very
       // performance critical!
-      var styleNames = qx.bom.Style.STYLENAMES;
+      var styleNames = this.__styleNames;
       var special = this.__special;
 
       var style = element.style;
@@ -345,7 +374,7 @@ qx.Bootstrap.define("qx.bom.element.Style",
       for (var key in styles)
       {
         var value = styles[key];
-        var name = qx.bom.Style.getPropertyName(key) || key;
+        var name = styleNames[key] || this.__getStyleName(key) || key;
 
         if (value === undefined)
         {
@@ -374,12 +403,11 @@ qx.Bootstrap.define("qx.bom.element.Style",
      * @param name {String} Name of the style attribute (js variant e.g. marginTop, wordSpacing)
      * @param smart {Boolean?true} Whether the implementation should automatically use
      *    special implementations for some properties
-     * @return {void}
      */
     reset : function(element, name, smart)
     {
       // normalize name
-      name = qx.bom.Style.getPropertyName(name) || name;
+      name = this.__styleNames[name] || this.__getStyleName(name) || name;
 
       // special handling for specific properties
       if (smart!==false && this.__special[name]) {
@@ -421,7 +449,7 @@ qx.Bootstrap.define("qx.bom.element.Style",
       "mshtml" : function(element, name, mode, smart)
       {
         // normalize name
-        name = qx.bom.Style.getPropertyName(name) || name;
+        name = this.__styleNames[name] || this.__getStyleName(name) || name;
 
         // special handling
         if (smart!==false && this.__special[name]) {
@@ -486,7 +514,7 @@ qx.Bootstrap.define("qx.bom.element.Style",
       "default" : function(element, name, mode, smart)
       {
         // normalize name
-        name = qx.bom.Style.getPropertyName(name) || name;
+        name = this.__styleNames[name] || this.__getStyleName(name) || name;
 
         // special handling
         if (smart!==false && this.__special[name]) {
@@ -532,5 +560,9 @@ qx.Bootstrap.define("qx.bom.element.Style",
         }
       }
     })
+  },
+
+  defer : function(statics) {
+    statics.__detectVendorProperties();
   }
 });

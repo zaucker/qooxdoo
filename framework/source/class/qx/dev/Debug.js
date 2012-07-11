@@ -39,14 +39,13 @@ qx.Class.define("qx.dev.Debug",
      * @param obj {Object}
      *   The object to be recursively displayed
      *
-     * @param initialMessage {String, null}
+     * @param initialMessage {String|null}
      *   The initial message to be displayed.
      *
      * @param maxLevel {Integer ? 10}
      *   The maximum level of recursion.  Objects beyond this level will not
      *   be displayed.
      *
-     * @return {void}
      */
     debugObject : function(obj, initialMessage, maxLevel)
     {
@@ -65,7 +64,7 @@ qx.Class.define("qx.dev.Debug",
      * @param obj {Object}
      *   The object to be recursively displayed
      *
-     * @param initialMessage {String, null}
+     * @param initialMessage {String|null}
      *   The initial message to be displayed.
      *
      * @param maxLevel {Integer ? 10}
