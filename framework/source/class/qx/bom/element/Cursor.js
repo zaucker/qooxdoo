@@ -31,10 +31,6 @@ qx.Bootstrap.define("qx.bom.element.Cursor",
 
   statics :
   {
-    /** Internal helper structure to map cursor values to supported ones */
-    __map : {},
-
-
     /**
      * Compiles the given cursor into a CSS compatible string.
      *
@@ -42,7 +38,7 @@ qx.Bootstrap.define("qx.bom.element.Cursor",
      * @return {String} CSS string
      */
     compile : function(cursor) {
-      return "cursor:" + (this.__map[cursor] || cursor) + ";";
+      return "cursor:" + qx.bom.Cursor.resolve(cursor) + ";";
     },
 
 
@@ -67,7 +63,7 @@ qx.Bootstrap.define("qx.bom.element.Cursor",
      * @param value {String} New cursor value to set
      */
     set : function(element, value) {
-      element.style.cursor = this.__map[value] || value;
+      element.style.cursor = qx.bom.Cursor.resolve(value);
     },
 
 
@@ -78,36 +74,6 @@ qx.Bootstrap.define("qx.bom.element.Cursor",
      */
     reset : function(element) {
       element.style.cursor = "";
-    }
-  },
-
-
-  defer : function(statics) {
-    // < IE 9
-    if (qx.core.Environment.get("engine.name") == "mshtml" &&
-         ((parseFloat(qx.core.Environment.get("engine.version")) < 9 ||
-          qx.core.Environment.get("browser.documentmode") < 9) &&
-          !qx.core.Environment.get("browser.quirksmode"))
-    ) {
-      statics.__map["nesw-resize"] = "ne-resize";
-      statics.__map["nwse-resize"] = "nw-resize";
-
-      // < IE 8
-      if (((parseFloat(qx.core.Environment.get("engine.version")) < 8 ||
-          qx.core.Environment.get("browser.documentmode") < 8) &&
-          !qx.core.Environment.get("browser.quirksmode"))
-      ) {
-        statics.__map["ew-resize"] = "e-resize";
-        statics.__map["ns-resize"] = "n-resize";
-      }
-
-    // Opera < 12
-    } else if (
-      qx.core.Environment.get("engine.name") == "opera" && 
-      parseInt(qx.core.Environment.get("engine.version")) < 12
-    ) {
-      statics.__map["nesw-resize"] = "ne-resize";
-      statics.__map["nwse-resize"] = "nw-resize";
     }
   }
 });

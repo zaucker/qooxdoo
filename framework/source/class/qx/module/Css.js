@@ -36,6 +36,10 @@ qx.Bootstrap.define("qx.module.Css", {
      * @return {q} The collection for chaining
      */
     setStyle : function(name, value) {
+      // cursor mapping
+      if (name === "cursor") {
+        value = qx.bom.Cursor.resolve(value);
+      }
       name = qx.bom.Style.getPropertyName(name);
       jQuery.fn.css.call(this, name, value);
       return this;
