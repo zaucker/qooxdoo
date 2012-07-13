@@ -40,7 +40,15 @@ qx.Bootstrap.define("qx.module.Css", {
       if (name === "cursor") {
         value = qx.bom.Cursor.resolve(value);
       }
+      // special opacity treatment
+      if (name == "opacity") {
+        return qx.module.Css.__setOpacity(this, value);
+        return this;
+      }
+
+      // vendor prefixing
       name = qx.bom.Style.getPropertyName(name);
+
       jQuery.fn.css.call(this, name, value);
       return this;
     },
@@ -55,8 +63,78 @@ qx.Bootstrap.define("qx.module.Css", {
      * @return {var} Style property value
      */
     getStyle : function(name) {
+      // special opacity treatment
+      if (name == "opacity") {
+        return qx.module.Css.__getOpacity(this[0]);
+      }
+      // vendor prefixing
       name = qx.bom.Style.getPropertyName(name);
       return jQuery.fn.css.call(this, name);
+    },
+
+
+    /**
+     * Internal helper for IE < 9 which takes care of the mapping
+     * from opacity to alpha filter.
+     * @param col {q} A collection to work on.
+     * @param value {Number} The opacity to set.
+     */
+    __setOpacity : function(col, value) {
+      value = value >= 1 ? "" : value;
+
+      if (
+        !qx.core.Environment.get("css.opacity") &&
+        qx.core.Environment.get("engine.name") == "mshtml"
+      ) {
+        var filter = jQuery.fn.css.call(col, "filter");
+        // normalize filter
+        filter = filter == "auto" ? "" : filter;
+        // normalize value
+        value = value == "" ? 1 : value;
+        value = value < 0.00001 ? 0 : value;
+
+        // IE has trouble with opacity if it does not have layout (hasLayout)
+        // Force it by setting the zoom level
+        for (var i=0; i < col.length; i++) {
+          if (!col[i].currentStyle || !col[i].currentStyle.hasLayout) {
+            jQuery.fn.css.call([col[i]], "zoom", 1)
+          }
+        };
+
+        // Remove old alpha filter and add new one
+        filter = filter.replace(/alpha\([^\)]*\)/gi, "") + "alpha(opacity=" + value * 100 + ")";
+        jQuery.fn.css.call(col, "filter", filter);
+      }
+      // default case, just use the jQuery method to set the opacity value
+      jQuery.fn.css.call(col, "opacity", value);
+    },
+
+
+    /**
+     * Internal helper for IE < 9 which takes care of the mapping
+     * from opacity to alpha filter.
+     * @param el {Element} The element to check the opacity from.
+     * @return {Number} The opacify as number.
+     */
+    __getOpacity : function(el) {
+      if (
+        !qx.core.Environment.get("css.opacity") &&
+        qx.core.Environment.get("engine.name") == "mshtml"
+      ) {
+        var filter = jQuery.fn.css.call([el], "filter");
+
+        if (filter) {
+          var opacity = filter.match(/alpha\(opacity=(.*)\)/);
+
+          if (opacity && opacity[1]) {
+            return parseFloat(opacity[1]) / 100;
+          }
+        }
+
+        return 1.0;
+      }
+      // default case, just use the jQuery method to get the opacity value and parse it
+      return parseFloat(jQuery.fn.css.call([el], "opacity"));
     },
 
 
