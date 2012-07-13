@@ -65,10 +65,10 @@ qx.Bootstrap.define("qx.bom.Style",
         }
       }
     },
-    
-    
-    /** 
-     * Vendor-specific style property prefixes 
+
+
+    /**
+     * Vendor-specific style property prefixes
      */
     VENDOR_PREFIXES : ["Webkit", "Moz", "O", "ms", "Khtml"],
 
@@ -85,7 +85,7 @@ qx.Bootstrap.define("qx.bom.Style",
       if (this.STYLENAMES[propertyName]) {
         return this.STYLENAMES[propertyName];
       }
-      
+
       var style = document.documentElement.style;
 
       if (style[propertyName] !== undefined) {
