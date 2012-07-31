@@ -860,7 +860,7 @@ testrunner.define({
     this.assertEquals("15px", result["margin-bottom"]);
     test.remove();
   },
-  
+
   testSpecialProperties : function() {
     var props = {
       "css.appearance" : ["appearance", "searchfield"],
@@ -870,7 +870,7 @@ testrunner.define({
       "css.usermodify" : ["userModify", "read-only"],
       "css.boxsizing" : ["boxSizing", "border-box"]
     }
-    
+
     for (var envKey in props) {
       var style = props[envKey][0];
       var envVal = q.env.get(envKey);
@@ -880,7 +880,7 @@ testrunner.define({
       var value = props[envKey][1];
       var test = q.create("<div>affe</div>").appendTo(this.sandbox[0])
       .setStyle(style, value);
-      
+
       this.assertEquals(value, test.getStyle(style));
     }
   },
@@ -1126,6 +1126,22 @@ testrunner.define({
     }, 250);
 
     this.wait(500);
+  },
+
+  testHideShow : function()
+  {
+    var test = q.create('<div style="display: inline">Yoohoo</div>')
+    .appendTo(this.sandbox[0]);
+    test.hide();
+    this.assertEquals("none", test.getStyle("display"));
+    test.show();
+    this.assertEquals("inline", test.getStyle("display"));
+
+    // no previous value:
+    var test2 = q.create('<span style="display: none">Yoohoo</span>')
+    .appendTo(this.sandbox[0]);
+    test2.show();
+    this.assertEquals("inline", test2.getStyle("display"));
   }
 });
 

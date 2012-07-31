@@ -389,6 +389,36 @@ qx.Bootstrap.define("qx.module.Css", {
 
       var head = doc.getElementsByTagName("head")[0];
       head.appendChild(el);
+    },
+
+
+    /**
+     * Hides all elements in the collection by setting their "display"
+     * style to "none". The previous value is stored so it can be re-applied
+     * when {@link #show} is called.
+     *
+     * @attach {q}
+     * @return {q} The collection for chaining
+     */
+    hide : function() {
+      for (var i=0,l=this.length; i<l; i++) {
+        jQuery.fn.hide.call([this[i]]);
+      }
+    },
+
+    /**
+     * Shows any elements with "display: none" in the collection. If an element
+     * was hidden by using the {@link #hide} method, its previous
+     * "display" style value will be re-applied. Otherwise, the
+     * default "display" value for the element type will be applied.
+     *
+     * @attach {q}
+     * @return {q} The collection for chaining
+     */
+    show : function() {
+      for (var i=0,l=this.length; i<l; i++) {
+        jQuery.fn.show.call([this[i]]);
+      }
     }
   },
 
@@ -416,7 +446,9 @@ qx.Bootstrap.define("qx.module.Css", {
       "getContentHeight" : statics.getContentHeight,
       "getContentWidth" : statics.getContentWidth,
 
-      "getPosition" : statics.getPosition
+      "getPosition" : statics.getPosition,
+      "hide" : statics.hide,
+      "show" : statics.show
     });
 
     q.$attachStatic({
