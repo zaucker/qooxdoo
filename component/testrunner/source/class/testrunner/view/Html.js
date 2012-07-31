@@ -728,7 +728,7 @@ qx.Class.define("testrunner.view.Html", {
           else {
             this._applyTestCount(this.getTestCount());
           }
-          q("#testfilter,#togglealltests,#run").setAttribute("disabled", "");
+          q("#testfilter,#togglealltests,#run").removeAttribute("disabled");
           q("#stop").setAttribute("disabled", "disabled")
           this.setFailedTestCount(0);
           this.setSuccessfulTestCount(0);
@@ -739,7 +739,7 @@ qx.Class.define("testrunner.view.Html", {
         case "running" :
           this.setStatus("Running tests...");
           q("#testfilter,#togglealltests,#run").setAttribute("disabled", "disabled");
-          q("#stop").setAttribute("disabled", "");
+          q("#stop").removeAttribute("disabled");
           break;
         case "finished" :
           var statusText = "Test suite finished. ";
@@ -747,17 +747,17 @@ qx.Class.define("testrunner.view.Html", {
           statusText += " Failed: " + this.getFailedTestCount();
           statusText += " Skipped: " + this.getSkippedTestCount();
           this.setStatus(statusText);
-          q("#testfilter,#togglealltests,#run").setAttribute("disabled", "");
+          q("#testfilter,#togglealltests,#run").removeAttribute("disabled");
           q("#stop").setAttribute("disabled", "disabled");
           break;
         case "aborted" :
           this.setStatus("Test run stopped");
-          q("#testfilter,#togglealltests,#run").setAttribute("disabled", "");
+          q("#testfilter,#togglealltests,#run").removeAttribute("disabled");
           q("#stop").setAttribute("disabled", "disabled");
           break;
         case "error" :
           this.setStatus("Invalid test file selected!");
-          q("#testfilter,#togglealltests,#run").setAttribute("disabled", "");
+          q("#testfilter,#togglealltests,#run").removeAttribute("disabled");
           q("#stop").setAttribute("disabled", "disabled");
           break;
       };
