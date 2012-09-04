@@ -105,6 +105,19 @@ qx.Class.define("testrunner.runner.TestRunner", {
         case "external":
           this._loadExternalTests();
           break;
+        case "push":
+          // Let the tests from a standalone AUT be pushed
+          this.__iframe = this.view.getIframe();
+          qx.event.Registration.addListener(this.__iframe, "load", this._onLoadIframe, this);
+          
+          var self = this;
+          socket.on('testsuitechange', function(data) {
+            self.setTestSuiteState("loading");
+            self.view.setAutCode(data);
+            setTimeout(function(){qx.core.Init.getApplication().runner.view.run()}, 1000);
+          }, false);
+          
+          break;
       }
     },
 
