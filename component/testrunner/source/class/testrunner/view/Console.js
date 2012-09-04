@@ -279,7 +279,25 @@ qx.Class.define("testrunner.view.Console", {
     _applyAutUri : function(value, old)
     {
       qx.bom.Iframe.setSource(this.getIframe(), value);
+    },
+    
+    /**
+     * Injects the AUT's source code into the Iframe
+     *
+     * @param value {String} AUT source code
+     * @param old {String} Previous value
+     */
+    _applyAutCode : function(value, old)
+    {
+      var doc = qx.bom.Iframe.getDocument(this.getIframe());
+      doc.innerHTML = value;
+      
+      // var el = document.createElement("script");
+      // el.type = "text/javascript";
+      // el.text = value;
+      // document.body.appendChild(el);
     }
+    
   },
 
   destruct : function()

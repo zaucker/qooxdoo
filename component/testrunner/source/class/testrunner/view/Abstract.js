@@ -99,6 +99,14 @@ qx.Class.define("testrunner.view.Abstract", {
       nullable : true,
       event : "changeAutUri",
       apply : "_applyAutUri"
+    },
+    
+    autCode:
+    {
+      check : "String",
+      nullable : true,
+      event : "changeAutCode",
+      apply : "_applyAutCode"
     }
   },
 
@@ -190,7 +198,18 @@ qx.Class.define("testrunner.view.Abstract", {
      * @param old {String} Previous value
      */
     _applyAutUri : function(value, old)
+    {},
+    
+    
+    /**
+     * Injects the AUT's source code into the Iframe
+     *
+     * @param value {String} AUT source code
+     * @param old {String} Previous value
+     */
+    _applyAutCode : function(value, old)
     {}
+    
   },
 
   destruct : function()
