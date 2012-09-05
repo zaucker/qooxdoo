@@ -45,7 +45,8 @@
     "source-all",
     "source-basic",
     "source-widget",
-    "translation"
+    "translation",
+    "push-inline"
   ],
   
   "default-job" : "source",
@@ -167,6 +168,16 @@
     "translation" :
     {
       "translate" : { "poentry-with-occurrences" : false  }
+      },
+    
+    "push-inline" :
+    {
+      "extend" : ["source-inline"],
+      "library" : [{"manifest" : "../tutorials/twitter/step4.3/Manifest.json"}],
+      "let" : {
+        "TESTRUNNER_ORIGIN" : "inline",
+        "TEST_NAMESPACE" : "twitter.test"
+      }
     }
 
   }
