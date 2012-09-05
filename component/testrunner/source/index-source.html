@@ -3,6 +3,18 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <title>Test Runner</title>
+    <script src="/socket.io/socket.io.js"></script>
+  <script>
+    var socket = io.connect('http://192.168.43.160:8888');
+
+    socket.on('error', function (reason){
+      console.log('Unable to connect Socket.IO', reason);
+    });
+
+    socket.on('connect', function (){
+      console.info('successfully established a working connection \o/');
+    });
+  </script>
   <script type="text/javascript">
     if (!window.qx) {window.qx = {}}
     if (!qx.$$environment) {qx.$$environment = {}}

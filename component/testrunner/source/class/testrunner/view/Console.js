@@ -290,12 +290,12 @@ qx.Class.define("testrunner.view.Console", {
     _applyAutCode : function(value, old)
     {
       var doc = qx.bom.Iframe.getDocument(this.getIframe());
-      doc.innerHTML = value;
-      
-      // var el = document.createElement("script");
-      // el.type = "text/javascript";
-      // el.text = value;
-      // document.body.appendChild(el);
+      //doc.write("<script>" + value + "</script>");
+  
+      var el = doc.createElement("script");
+      el.type = "text/javascript";
+      el.text = value;
+      doc.body.appendChild(el);
     }
     
   },
