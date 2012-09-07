@@ -41,4 +41,8 @@ io.sockets.on('connection', function (socket) {
       socket.emit('testsuitechange', data.toString());
     });
   });
+  
+  socket.on('callback', function(data) {
+    console.log("What came back: " + data.toString());
+  });
 });
