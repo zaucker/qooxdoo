@@ -108,7 +108,7 @@ qx.Class.define("testrunner.runner.TestRunner", {
         case "push":
           // Let the tests from a standalone AUT be pushed
           this.__iframe = this.view.getIframe();
-          this.view.setAutUri("html/tests-wrapper.html");
+          this.view.setAutUri("html/tests-wrapper.html" + "?testclass=" + this._testNameSpace);
           //qx.event.Registration.addListener(this.__iframe, "load", this._onLoadIframe, this);
           
           var self = this;
@@ -116,7 +116,7 @@ qx.Class.define("testrunner.runner.TestRunner", {
             self.setTestSuiteState("loading");
             self.view.setAutCode(data);
             self._onLoadIframe();
-            //setTimeout(function(){qx.core.Init.getApplication().runner.view.run()}, 1000);
+            setTimeout(function(){qx.core.Init.getApplication().runner.view.run()}, 1000);
           }, false);
           // done in _onLoadIframe()
           //this._getTestModel();
