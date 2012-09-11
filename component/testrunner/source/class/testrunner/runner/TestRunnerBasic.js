@@ -55,6 +55,8 @@ qx.Class.define("testrunner.runner.TestRunnerBasic", {
     if (qx.core.Environment.get("qx.globalErrorHandling")) {
       qx.event.GlobalError.setErrorHandler(this._handleGlobalError, this);
     }
+    
+    this._origin = qx.core.Environment.get("testrunner.testOrigin");
 
     // Create view
     this.__testsInView = [];
@@ -142,6 +144,7 @@ qx.Class.define("testrunner.runner.TestRunnerBasic", {
   members :
   {
     loader : null,
+    _origin : null,
     _testParts : null,
     __testsInView : null,
     _testNameSpace : null,
