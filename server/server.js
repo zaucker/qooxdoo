@@ -14,7 +14,7 @@ function handleFunction(request, response) {
     response.end();
   }
   
-  else if(request.url == "/events" && request.headers.accept == "text/event-stream") {
+  else if(request.url == "/events") {
     response.writeHead(200, {
       "Content-Type": "text/event-stream",
       "Cache-Control": "no-cache",
