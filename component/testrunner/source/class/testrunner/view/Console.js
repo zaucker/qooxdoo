@@ -289,13 +289,11 @@ qx.Class.define("testrunner.view.Console", {
      */
     _applyAutCode : function(value, old)
     {
-      var doc = qx.bom.Iframe.getDocument(this.getIframe());
-      //doc.write("<script>" + value + "</script>");
-  
+      var doc = qx.bom.Iframe.getDocument(this.getIframe());  
       var el = doc.createElement("script");
       el.type = "text/javascript";
       el.text = value;
-      doc.body.appendChild(el);
+      doc.getElementsByTagName("head")[0].appendChild(el);
     }
     
   },
