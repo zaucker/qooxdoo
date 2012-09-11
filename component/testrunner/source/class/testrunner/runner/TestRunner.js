@@ -50,7 +50,7 @@ qx.Class.define("testrunner.runner.TestRunner", {
       this.__logAppender = new qx.log.appender.Element();
       qx.log.Logger.unregister(this.__logAppender);
       this.__logAppender.setElement(this.view.getLogAppenderElement());
-      if (qx.core.Environment.get("testrunner.testOrigin") != "iframe") {
+      if (this._origin != "iframe") {
         qx.log.Logger.register(this.__logAppender);
       }
     }
@@ -88,8 +88,7 @@ qx.Class.define("testrunner.runner.TestRunner", {
 
     _loadTests : function()
     {
-      var origin = qx.core.Environment.get("testrunner.testOrigin");
-      switch(origin) {
+      switch(this._origin) {
         case "iframe":
           // Load the tests from a standalone AUT
           this.__iframe = this.view.getIframe();
@@ -106,20 +105,38 @@ qx.Class.define("testrunner.runner.TestRunner", {
           this._loadExternalTests();
           break;
         case "push":
-          // Let the tests from a standalone AUT be pushed
+          var eventsource = new EventSource("../../../events");
           this.__iframe = this.view.getIframe();
-          this.view.setAutUri("html/tests-wrapper.html" + "?testclass=" + this._testNameSpace);
-          //qx.event.Registration.addListener(this.__iframe, "load", this._onLoadIframe, this);
-          
+          this.frameWindow = qx.bom.Iframe.getWindow(this.__iframe);
           var self = this;
-          socket.on('testsuitechange', function(data) {
+          
+          var evtFunc = function(event) {
+            // Load the tests from a standalone AUT
+            qx.event.Registration.addListener(this.__iframe, "load", this._onLoadIframe, this);
+            var src = event.data + "?testclass=" + this._testNameSpace;
+            this.setTestSuiteState("loading");
+            this.view.setAutUri(src);
+          }
+          
+          var boundEvtFunc = evtFunc.bind(this);
+          
+          eventsource.addEventListener('autUri', boundEvtFunc, false);
+          
+          eventsource.addEventListener('autCode', function(event) {
             self.setTestSuiteState("loading");
-            self.view.setAutCode(data);
-            self._onLoadIframe();
-            setTimeout(function(){qx.core.Init.getApplication().runner.view.run()}, 1000);
+            //obly implemented in view.Console
+            //self.view.setAutCode(data);
+            
+            var doc = qx.bom.Iframe.getDocument(self.__iframe);
+            var el =doc.createElement("script");
+            el.text = event.data;
+            doc.getElementsByTagName("head")[0].appendChild(el);
+            
+            self.loader = qx.bom.Iframe.getWindow(self.__iframe).testrunner.TestLoader.getInstance();
+            self.loader.setTestNamespace(self._testNameSpace);
+            //self._wrapAssertions(self.frameWindow);
+            self._getTestModel();
           }, false);
-          // done in _onLoadIframe()
-          //this._getTestModel();
           
           break;
       }
@@ -167,7 +184,7 @@ qx.Class.define("testrunner.runner.TestRunner", {
 
     _getTestResult : function()
     {
-      if (qx.core.Environment.get("testrunner.testOrigin") == "iframe") {
+      if (this._origin == "iframe" || this._origin == "push") {
         var frameWindow = qx.bom.Iframe.getWindow(this.__iframe);
         var testResult = new frameWindow.qx.dev.unit.TestResult();
 
@@ -179,7 +196,7 @@ qx.Class.define("testrunner.runner.TestRunner", {
 
 
     _onTestEnd : function(ev) {
-      if (qx.core.Environment.get("testrunner.testOrigin") == "iframe") {
+      if (this._origin == "iframe" || this._origin == "push") {
         if (this.__logAppender) {
           this.__fetchIframeLog();
         }
