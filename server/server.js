@@ -26,19 +26,37 @@ function handleFunction(request, response) {
     //2kb padding for IE
     response.write(':' + Array(2049).join(' ') + '\n');
     
-    var fileName = "tests.js"
-    fs.watchFile(fileName, function (curr, prev) {
-      var eventType = 'testsuitechange';
+    var buildTests = "../component/testrunner/build/script/tests.js"
+    var sourceTests = "../component/testrunner/source/script/tests-source.js"
     
-      //console.log(fileName, "changed");
+    fs.watchFile(buildTests, function (curr, prev) {
     
+      fs.readFile(buildTests, function (err, data) {
+        if (err) throw err;
+      
+        var sseData = String(data).replace(/(\r\n|\n|\r)/gm, "\ndata:");
+    
+        //console.log(fileName, "changed");
+    
+        var responseText = [
+            'event:' + 'autCode',
+            'data:' + sseData
+          ].join("\n") + "\n\n";
+    
+        response.write(responseText);
+        console.log(sseData);
+      });
+    });
+    
+    fs.watchFile(sourceTests, function(curr, prev) {
       var responseText = [
-          'event:' + eventType,
-          'data:' + fileName
+          'event:' + 'autUri',
+          'data:' + "html/tests-source.html"
         ].join("\n") + "\n\n";
     
       response.write(responseText);
     });
+   
 
   }
   else {
