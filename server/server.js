@@ -18,7 +18,30 @@ function handleFunction(request, response) {
   
   else if(request.url == "/master") {
     setUpResponseForSSE(response);
-     masterClient = response;
+    masterClient = response;
+  }
+  
+  else if(request.url == "/results") {
+    //Check if it really is a POST-request
+    if (request.method == "POST") {
+
+      var fullBody = '';
+
+      // as long as data come in, append the current chunk of data to the fullBody variable
+      request.on('data', function(chunk) {
+          fullBody += chunk.toString();
+        });
+
+      // request ended, so print the body to the console
+      request.on('end', function() {
+        response.writeHead(200);
+        // response.writeHead(200, "OK", {'Content-Type': 'text/plain'})3;
+        response.end();
+        
+        masterClient.write('event:results' + '\n' +
+                          'data:' + fullBody + '\n\n'); 
+      });
+    }
   }
   
   else if(request.url == "/events") {
