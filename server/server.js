@@ -33,17 +33,6 @@ function handleFunction(request, response) {
       response.end();
     }
     
-    /**
-     * sending a periodic comment for keeping connection alive
-     * is recommended especially for IE but causes hickups with the SSEs
-     * 
-     * Putting this inside setUpResponseForSSE() breaks the code 
-     * entirely and no SSE are received at all. Why!?
-     */
-    // setInterval(function () {
-    //   response.write(':');
-    // } , 15000);
-    // 
     var buildTests = "../component/testrunner/build/script/tests.js"
     var sourceTests = "../component/testrunner/source/script/tests-source.js"
     
@@ -103,6 +92,14 @@ function setUpResponseForSSE (response) {
     
   //2kb padding for IE
   response.write(':' + Array(2049).join(' ') + '\n');
+  
+  /**
+   * sending a periodic comment for keeping connection alive
+   * is recommended especially for IE 
+   */
+  setInterval(function () {
+    response.write(':\n');
+  } , 15000);
   
 }
 
