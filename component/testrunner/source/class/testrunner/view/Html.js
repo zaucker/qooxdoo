@@ -544,6 +544,9 @@ qx.Class.define("testrunner.view.Html", {
           this.reportResult(testName);
         }
       }
+      // console.log(testName);
+      // console.log(state);
+      // console.log(testResultData.getMessage());
     },
 
 
@@ -749,6 +752,19 @@ qx.Class.define("testrunner.view.Html", {
           this.setStatus(statusText);
           q("#testfilter,#togglealltests,#run").setAttribute("disabled", "");
           q("#stop").setAttribute("disabled", "disabled");
+          
+          this.__testResults.client = "Client_1";
+          var myResults = JSON.stringify(this.__testResults)
+          console.log(myResults);
+          
+          // var req = new qx.io.request.Xhr("/results", "POST");
+          // req.setRequestData(myResults);
+          // req.send();
+          
+          var xhr = new XMLHttpRequest();
+          xhr.open("POST", "/results", true);
+          xhr.send(myResults);
+          
           break;
         case "aborted" :
           this.setStatus("Test run stopped");
