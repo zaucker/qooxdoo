@@ -6,13 +6,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <script type="text/javascript" src="eventsource.js"></script>
     <script>
-      var es = new EventSource('/events');
+      var es = new EventSource('/master');
       es.addEventListener('open', function (event) {
         var div = document.createElement('div');
         div.innerHTML = 'opened: ' + es.url;
         document.body.appendChild(div);
       });
-      es.addEventListener('autUri', function (event) {
+      es.addEventListener('newClient', function (event) {
         document.body.appendChild(document.createTextNode(Date()));
         document.body.appendChild(document.createElement('br'));
         document.body.appendChild(document.createTextNode(event.data));

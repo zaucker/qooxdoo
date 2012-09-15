@@ -7,6 +7,8 @@ http.listen(8000);
 
 var fileServer = new static.Server('../');
 
+var masterClient = null;
+
 function handleFunction(request, response) {
   
   if(request.url === "/") {
@@ -14,18 +16,34 @@ function handleFunction(request, response) {
     response.end();
   }
   
+  else if(request.url == "/master") {
+    setUpResponseForSSE(response);
+     masterClient = response;
+  }
+  
   else if(request.url == "/events") {
-    response.writeHead(200, {
-      "Content-Type": "text/event-stream",
-      "Cache-Control": "no-cache",
-      "Connection": "keep-alive",
-      //neccessary for IE
-      "Access-Control-Allow-Origin": "*"
-    });
+    setUpResponseForSSE(response);
     
-    //2kb padding for IE
-    response.write(':' + Array(2049).join(' ') + '\n');
+    if(masterClient != null) {
+      masterClient.write('event:newClient' + '\n' +
+                          'data:' + request.headers['user-agent'] + '\n\n'); 
+    }
     
+    else {
+      response.end();
+    }
+    
+    /**
+     * sending a periodic comment for keeping connection alive
+     * is recommended especially for IE but causes hickups with the SSEs
+     * 
+     * Putting this inside setUpResponseForSSE() breaks the code 
+     * entirely and no SSE are received at all. Why!?
+     */
+    // setInterval(function () {
+    //   response.write(':');
+    // } , 15000);
+    // 
     var buildTests = "../component/testrunner/build/script/tests.js"
     var sourceTests = "../component/testrunner/source/script/tests-source.js"
     
@@ -72,6 +90,20 @@ function handleFunction(request, response) {
       });
     });
   }
+}
+
+function setUpResponseForSSE (response) {
+  response.writeHead(200, {
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache",
+    "Connection": "keep-alive",
+    //neccessary for IE
+    "Access-Control-Allow-Origin": "*"
+  });
+    
+  //2kb padding for IE
+  response.write(':' + Array(2049).join(' ') + '\n');
+  
 }
 
 // var io = require('socket.io').listen(http);
