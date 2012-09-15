@@ -3,7 +3,7 @@ var util = require("util");
 var static = require('node-static');
 
 var http = require("http").createServer(handleFunction);
-http.listen(8888);
+http.listen(8000);
 
 var fileServer = new static.Server('../');
 
