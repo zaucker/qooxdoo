@@ -56,20 +56,46 @@ qx.Class.define("pushtestreporter.Application",
         Below is your actual application code...
       -------------------------------------------------------------------------
       */
+      
+      var es = new EventSource('/master');
+      
+      var list = new qx.ui.list.List(null);
+      this.getRoot().add(list);
+      
 
-      // Create a button
-      var button1 = new qx.ui.form.Button("First Button", "pushtestreporter/test.png");
+      var list2 = new qx.ui.list.List(null);
+      this.getRoot().add(list2, {left: 100});
 
-      // Document is the application root
-      var doc = this.getRoot();
+      var s1 = list.getChildControl("scrollbar-y");
+      var s2 = list2.getChildControl("scrollbar-y");
 
-      // Add button to document at fixed coordinates
-      doc.add(button1, {left: 100, top: 50});
-
-      // Add an event listener
-      button1.addListener("execute", function(e) {
-        alert("Hello World!");
+      s1.bind("position", s2, "position");
+      s2.bind("position", s1, "position");
+      
+      es.addEventListener('open', function (event) {
       });
+      es.addEventListener('newClient', function (event) {
+      });
+	  
+	    es.addEventListener('results', function (event) {
+        json = JSON.parse(event.data);
+        
+        var array = new qx.data.Array();
+        
+        for (var prop in json) {
+          array.push(prop);
+          debugger;
+        }
+        
+        list.setModel(array);
+        list.refresh();
+        list2.setModel(array);
+        list2.refresh();
+	    });
+	  
+      es.addEventListener('error', function (event) {
+      });      
+
     }
   }
 });
