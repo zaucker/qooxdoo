@@ -19,6 +19,14 @@
         document.body.appendChild(document.createElement('br'));
         document.body.appendChild(document.createElement('br'));
       });
+	  
+	    es.addEventListener('results', function (event) {
+	    	json = JSON.parse(event.data);
+	        document.body.appendChild(document.createTextNode(json));
+	        document.body.appendChild(document.createElement('br'));
+	        document.body.appendChild(document.createElement('br'));
+	    });
+	  
       es.addEventListener('error', function (event) {
         var div = document.createElement('div');
         div.innerHTML = 'closed';
