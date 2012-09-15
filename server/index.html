@@ -12,7 +12,7 @@
         div.innerHTML = 'opened: ' + es.url;
         document.body.appendChild(div);
       });
-      es.addEventListener('testsuitechange', function (event) {
+      es.addEventListener('autUri', function (event) {
         document.body.appendChild(document.createTextNode(Date()));
         document.body.appendChild(document.createElement('br'));
         document.body.appendChild(document.createTextNode(event.data));
