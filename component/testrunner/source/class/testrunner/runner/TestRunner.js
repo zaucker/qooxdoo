@@ -110,6 +110,10 @@ qx.Class.define("testrunner.runner.TestRunner", {
           this.__iframe = this.view.getIframe();
           this.frameWindow = qx.bom.Iframe.getWindow(this.__iframe);
           
+          eventsource.addEventListener('clientId', function(event) {
+            this.__pushClientId = event.data;
+            console.log("My ID is " + this.__pushClientId);
+          }.bind(this), false);
           
           eventsource.addEventListener('autUri', function() {
             // Load the tests from a standalone AUT
