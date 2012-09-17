@@ -58,33 +58,37 @@ qx.Class.define("pushtestreporter.Application",
       */
       
       var es = new EventSource('/master');
-      
-      var list = new qx.ui.list.List(null);
-      this.getRoot().add(list);
-      
-
-      var list2 = new qx.ui.list.List(null);
-      this.getRoot().add(list2, {left: 100});
-
-      var s1 = list.getChildControl("scrollbar-y");
-      var s2 = list2.getChildControl("scrollbar-y");
-
-      s1.bind("position", s2, "position");
-      s2.bind("position", s1, "position");
+    
       
       es.addEventListener('open', function (event) {
       });
       es.addEventListener('newClient', function (event) {
       });
+      
+      var self = this;
 	  
 	    es.addEventListener('results', function (event) {
+        
+        var list = new qx.ui.list.List(null);
+        list.setWidth(200);
+        self.getRoot().add(list);
+      
+
+        var list2 = new qx.ui.list.List(null);
+        list2.setWidth(200);
+        self.getRoot().add(list2, {left: 100});
+
+        var s1 = list.getChildControl("scrollbar-y");
+        var s2 = list2.getChildControl("scrollbar-y");
+
+        s1.bind("position", s2, "position");
+        s2.bind("position", s1, "position");
         json = JSON.parse(event.data);
         
         var array = new qx.data.Array();
         
         for (var prop in json) {
           array.push(prop);
-          debugger;
         }
         
         list.setModel(array);
