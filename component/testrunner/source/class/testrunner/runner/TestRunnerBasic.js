@@ -144,7 +144,6 @@ qx.Class.define("testrunner.runner.TestRunnerBasic", {
 
   members :
   {
-    _origin : null,
     loader : null,
     _origin : null,
     _testParts : null,
