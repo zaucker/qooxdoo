@@ -8,6 +8,7 @@ http.listen(8000);
 var fileServer = new static.Server('../');
 
 var masterClient = null;
+var clients = [];
 
 function handleFunction(request, response) {
   
@@ -45,11 +46,18 @@ function handleFunction(request, response) {
   }
   
   else if(request.url == "/events") {
+    
+    // TODO Handling for reconnect (last-event-id)
+    clients.push(response);
+    var clientId = clients.indexOf(response)+1;
+    
     setUpResponseForSSE(response);
     
     if(masterClient != null) {
-      masterClient.write('event:newClient' + '\n' +
-                          'data:' + request.headers['user-agent'] + '\n\n'); 
+      masterClient.write('event:clientJoined' + '\n' +
+                            'data:' + clientId + '\n\n');
+      response.write('event:clientId' + '\n' +
+                          'data:' + clientId + '\n\n'); 
     }
     
     else {
@@ -87,6 +95,16 @@ function handleFunction(request, response) {
       response.write(responseText);
     });
    
+    request.on('close', function () {
+      var clientId = clients.indexOf(response);
+      delete clients[clientId];
+      
+      if(masterClient != null) {
+        masterClient.write('event:clientLeft' + '\n' +
+                            'data:' + (clientId+1) + '\n\n'); 
+      }
+      
+    });
 
   }
   else {

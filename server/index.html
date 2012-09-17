@@ -12,10 +12,18 @@
         div.innerHTML = 'opened: ' + es.url;
         document.body.appendChild(div);
       });
-      es.addEventListener('newClient', function (event) {
+      es.addEventListener('clientJoined', function (event) {
         document.body.appendChild(document.createTextNode(Date()));
         document.body.appendChild(document.createElement('br'));
-        document.body.appendChild(document.createTextNode(event.data));
+        document.body.appendChild(document.createTextNode("Client " + event.data  + " joined"));
+        document.body.appendChild(document.createElement('br'));
+        document.body.appendChild(document.createElement('br'));
+      });
+      
+      es.addEventListener('clientLeft', function (event) {
+        document.body.appendChild(document.createTextNode(Date()));
+        document.body.appendChild(document.createElement('br'));
+        document.body.appendChild(document.createTextNode("Client " + event.data + " left"));
         document.body.appendChild(document.createElement('br'));
         document.body.appendChild(document.createElement('br'));
       });
