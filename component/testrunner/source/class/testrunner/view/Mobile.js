@@ -289,6 +289,12 @@ qx.Class.define("testrunner.view.Mobile", {
           this.setSelectedTests(new qx.data.Array());
           this.setSelectedTests(this.__testList);
           this.__runButton.setValue("Run");
+          
+          this.__suiteResults.client = qx.core.Init.getApplication().runner.__pushClientId;
+          var req = new qx.io.request.Xhr("/results", "POST");
+          req.setRequestData(JSON.stringify(this.__suiteResults));
+          req.send();
+          
           break;
         case "aborted" :
           this.setSelectedTests(new qx.data.Array());
