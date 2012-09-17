@@ -78,6 +78,7 @@ qx.Class.define("testrunner.runner.TestRunnerBasic", {
     this.bind("testModel", this.view, "testModel");
     qx.data.SingleValueBinding.bind(this.view, "selectedTests", this, "selectedTests");
 
+    this._origin = qx.core.Environment.get("testrunner.testOrigin");
     this._testNameSpace = this._getTestNameSpace();
 
     this._loadTests();
@@ -143,6 +144,7 @@ qx.Class.define("testrunner.runner.TestRunnerBasic", {
 
   members :
   {
+    _origin : null,
     loader : null,
     _origin : null,
     _testParts : null,
@@ -415,6 +417,7 @@ qx.Class.define("testrunner.runner.TestRunnerBasic", {
      */
     runTests : function()
     {
+      var self = this;
       var suiteState = this.getTestSuiteState();
       switch (suiteState) {
         case "loading":
@@ -424,10 +427,10 @@ qx.Class.define("testrunner.runner.TestRunnerBasic", {
         case "finished":
           if (this.testList.length > 0) {
             this.setTestSuiteState("running");
-            break;
           } else {
             return;
           }
+          break;
         case "aborted":
         case "error":
           return;
@@ -446,7 +449,6 @@ qx.Class.define("testrunner.runner.TestRunnerBasic", {
         }
         else {
         */
-          var self = this;
           /*
            * Ugly hack: Since the tests are run asynchronously we can't rely on
            * the queue to determine when everything is done.
@@ -466,7 +468,6 @@ qx.Class.define("testrunner.runner.TestRunnerBasic", {
       var functionName = currentTest.getName();
       var testResult = this.__initTestResult(currentTest);
 
-      var self = this;
       window.setTimeout(function() {
         self.loader.runTests(testResult, className, functionName);
       }, 0);

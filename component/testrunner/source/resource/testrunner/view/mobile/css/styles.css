@@ -1,0 +1,15 @@
+.start {
+  color: #333;
+}
+
+.success {
+  color: #007F00;
+}
+
+.failure {
+  color: #9E0000;
+}
+
+.skip {
+  color: #666666;
+}
