@@ -65,6 +65,7 @@ qx.Class.define("testrunner.runner.TestRunner", {
 
   members :
   {
+    __pushClientId : null,
     __iframe : null,
     frameWindow : null,
     __loadAttempts : null,
@@ -108,35 +109,31 @@ qx.Class.define("testrunner.runner.TestRunner", {
           var eventsource = new EventSource("../../../events");
           this.__iframe = this.view.getIframe();
           this.frameWindow = qx.bom.Iframe.getWindow(this.__iframe);
-          var self = this;
           
-          var evtFunc = function(event) {
+          
+          eventsource.addEventListener('autUri', function() {
             // Load the tests from a standalone AUT
             qx.event.Registration.addListener(this.__iframe, "load", this._onLoadIframe, this);
             var src = event.data + "?testclass=" + this._testNameSpace;
             this.setTestSuiteState("loading");
             this.view.setAutUri(src);
-          }
-          
-          var boundEvtFunc = evtFunc.bind(this);
-          
-          eventsource.addEventListener('autUri', boundEvtFunc, false);
+          }.bind(this), false);
           
           eventsource.addEventListener('autCode', function(event) {
-            self.setTestSuiteState("loading");
+            this.setTestSuiteState("loading");
             //obly implemented in view.Console
-            //self.view.setAutCode(data);
+            //this.view.setAutCode(data);
             
-            var doc = qx.bom.Iframe.getDocument(self.__iframe);
+            var doc = qx.bom.Iframe.getDocument(this.__iframe);
             var el =doc.createElement("script");
             el.text = event.data;
             doc.getElementsByTagName("head")[0].appendChild(el);
             
-            self.loader = qx.bom.Iframe.getWindow(self.__iframe).testrunner.TestLoader.getInstance();
-            self.loader.setTestNamespace(self._testNameSpace);
-            //self._wrapAssertions(self.frameWindow);
-            self._getTestModel();
-          }, false);
+            this.loader = qx.bom.Iframe.getWindow(this.__iframe).testrunner.TestLoader.getInstance();
+            this.loader.setTestNamespace(this._testNameSpace);
+            //this._wrapAssertions(this.frameWindow);
+            this._getTestModel();
+          }.bind(this), false);
           
           break;
       }
