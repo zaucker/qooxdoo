@@ -49,7 +49,7 @@ function handleFunction(request, response) {
     
     // TODO Handling for reconnect (last-event-id)
     clients.push(response);
-    var clientId = clients.indexOf(response);
+    var clientId = clients.indexOf(response)+1;
     
     setUpResponseForSSE(response);
     
@@ -101,7 +101,7 @@ function handleFunction(request, response) {
       
       if(masterClient != null) {
         masterClient.write('event:clientLeft' + '\n' +
-                            'data:' + (clientId) + '\n\n'); 
+                            'data:' + (clientId+1) + '\n\n'); 
       }
       
     });
