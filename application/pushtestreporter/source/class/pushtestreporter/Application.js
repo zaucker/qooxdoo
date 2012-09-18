@@ -58,25 +58,48 @@ qx.Class.define("pushtestreporter.Application",
       */
       
       var es = new EventSource('/master');
-    
+      var clients = [];
       
+      // create the composite
+      var container = new qx.ui.container.Composite()
+      container.setLayout(new qx.ui.layout.HBox(5));
+      this.getRoot().add(container);
+    
+      var counter = 10;
+      var colors =  ["red", "green", "yellow", "white", "blue"];
       es.addEventListener('open', function (event) {
       });
-      es.addEventListener('newClient', function (event) {
+      es.addEventListener('clientJoined', function (event) {
+        var list = clients[event.data] = new qx.ui.list.List(null);
+        list.setWidth(200);
+        list.setTextColor(colors[clients.length % colors.length]);
+        container.add(list);
+        
+        var array = new qx.data.Array();
+        
+        for (var i=counter; i>counter-10; i--) {
+          array.push(i);
+        }
+        
+        list.setModel(array);
+        
+        counter = clients.length * 10;
+        
+      });
+      
+      es.addEventListener('clientLeft', function (event) {
+        var list = clients[event.data];
+        console.log(list.getTextColor());
+        container.remove(list);
       });
       
       var self = this;
 	  
 	    es.addEventListener('results', function (event) {
-        
-        var list = new qx.ui.list.List(null);
-        list.setWidth(200);
-        self.getRoot().add(list);
       
-
         var list2 = new qx.ui.list.List(null);
         list2.setWidth(200);
-        self.getRoot().add(list2, {left: 100});
+        container.add(list2, {left: 100});
 
         var s1 = list.getChildControl("scrollbar-y");
         var s2 = list2.getChildControl("scrollbar-y");
