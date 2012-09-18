@@ -61,63 +61,70 @@ qx.Class.define("pushtestreporter.Application",
       var clients = [];
       
       // create the composite
-      var container = new qx.ui.container.Composite()
-      container.setLayout(new qx.ui.layout.HBox(5));
-      this.getRoot().add(container);
+      var mainContainer = new qx.ui.container.Composite()
+      mainContainer.setLayout(new qx.ui.layout.HBox(5));
+      this.getRoot().add(mainContainer);
     
       var counter = 10;
-      var colors =  ["red", "green", "yellow", "white", "blue"];
+
       es.addEventListener('open', function (event) {
       });
       es.addEventListener('clientJoined', function (event) {
-        var list = clients[event.data] = new qx.ui.list.List(null);
-        list.setWidth(200);
-        list.setTextColor(colors[clients.length % colors.length]);
+        var container = clients[event.data] = new qx.ui.container.Composite();
+        container.setLayout(new qx.ui.layout.VBox(5));
+        
+        var label = new qx.ui.basic.Label("Client " + event.data);
+        container.add(label);
+        
+        var list = new qx.ui.list.List(null);
+        list.setWidth(350);
         container.add(list);
-        
         var array = new qx.data.Array();
-        
         for (var i=counter; i>counter-10; i--) {
           array.push(i);
         }
-        
         list.setModel(array);
-        
-        counter = clients.length * 10;
-        
+        counter += 10;
+        mainContainer.add(container);
       });
+        
+       
+        
+
       
       es.addEventListener('clientLeft', function (event) {
-        var list = clients[event.data];
-        console.log(list.getTextColor());
-        container.remove(list);
+        if(clients[event.data] != undefined) {
+          mainContainer.remove(clients[event.data]);
+          delete clients[event.data];
+        }
       });
       
       var self = this;
 	  
 	    es.addEventListener('results', function (event) {
       
-        var list2 = new qx.ui.list.List(null);
-        list2.setWidth(200);
-        container.add(list2, {left: 100});
-
-        var s1 = list.getChildControl("scrollbar-y");
-        var s2 = list2.getChildControl("scrollbar-y");
-
-        s1.bind("position", s2, "position");
-        s2.bind("position", s1, "position");
-        json = JSON.parse(event.data);
-        
+        // var list2 = new qx.ui.list.List(null);
+        // list2.setWidth(200);
+        // container.add(list2, {left: 100});
+        // 
+        // var s1 = list.getChildControl("scrollbar-y");
+        // var s2 = list2.getChildControl("scrollbar-y");
+        // 
+        // s1.bind("position", s2, "position");
+        // s2.bind("position", s1, "position");
+        var result = JSON.parse(event.data);
+        var container = clients[result.client];
+                
         var array = new qx.data.Array();
-        
-        for (var prop in json) {
-          array.push(prop);
+
+        for (var test in result.tests) {
+          array.push(test);
         }
-        
+        var list = container.getChildren()[1];
         list.setModel(array);
         list.refresh();
-        list2.setModel(array);
-        list2.refresh();
+        // list2.setModel(array);
+        // list2.refresh();
 	    });
 	  
       es.addEventListener('error', function (event) {
