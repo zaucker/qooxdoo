@@ -46,7 +46,7 @@ qx.Class.define("testrunner.view.mobile.Mobile", {
     __testRows : null,
     __statusLabel : null,
     __suiteResults : null,
-    _pushId : null,
+    __pushId : null,
 
     /**
      * Run the suite, or stop a running suite.
@@ -242,13 +242,17 @@ qx.Class.define("testrunner.view.mobile.Mobile", {
     },
     
     //method for returning a new Label displaying the Client ID
-    _getClientIdLabel: function() 
+    _setClientIdAndLabels: function() 
     {
       qx.bom.Stylesheet.createElement(".clientId {font-weight:bold; padding-top:10px;}");
-      this._pushId = qx.core.Init.getApplication().runner.getPushClientId();
-      var clientLabel = new qx.ui.mobile.basic.Label("Client " + this._pushId);
-      clientLabel.addCssClass("clientId");
-      return clientLabel;
+      this.__pushId = qx.core.Init.getApplication().runner.getPushClientId();
+      //creating two clientId-Labels for the two views
+      var mainClientLabel = new qx.ui.mobile.basic.Label("Client " + this.__pushId);
+      mainClientLabel.addCssClass("clientId");
+      var detailClientLabel = new qx.ui.mobile.basic.Label("Client " + this.__pushId);
+      detailClientLabel.addCssClass("clientId");
+      this.__mainPage.getRightContainer().add(mainClientLabel);
+      this.__detailPage.getRightContainer().add(detailClientLabel);
     },
 
     /**
@@ -262,15 +266,11 @@ qx.Class.define("testrunner.view.mobile.Mobile", {
       switch(value)
       {
         case "init":
-          this.setStatus("Waiting for tests");
+          this.setStatus("Waiting for tests"); 
           break;
         case "loading" :
           this.setStatus("Loading tests...");
-          //creating two clientId-Labels for the two views
-          var mainClientLabel = this._getClientIdLabel();
-          var detailClientLabel = this._getClientIdLabel();          
-          this.__mainPage.getRightContainer().add(mainClientLabel);
-          this.__detailPage.getRightContainer().add(detailClientLabel);
+          this._setClientIdAndLabels();         
           break;
         case "ready" :
           this.setStatus(this.getSelectedTests().length + " tests ready to run.");
@@ -288,7 +288,7 @@ qx.Class.define("testrunner.view.mobile.Mobile", {
           this.setSelectedTests(new qx.data.Array());
           this.setSelectedTests(this.__testList);
           //send test-results to reporting-server
-          this.__suiteResults.client = this._pushId;
+          this.__suiteResults.client = this.__pushId;
           var req = new qx.io.request.Xhr("/results", "POST");
           req.setRequestData(JSON.stringify(this.__suiteResults));
           req.send();
