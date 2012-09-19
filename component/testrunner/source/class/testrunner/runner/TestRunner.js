@@ -93,6 +93,7 @@ qx.Class.define("testrunner.runner.TestRunner", {
           
       eventsource.addEventListener('clientId', function(event) {
         this.__pushClientId = event.data;
+        this.view.setClientIdAndLabels(event.data);
       }.bind(this), false);
           
       eventsource.addEventListener('autUri', function() {

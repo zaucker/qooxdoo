@@ -242,10 +242,10 @@ qx.Class.define("testrunner.view.mobile.Mobile", {
     },
     
     //method for returning a new Label displaying the Client ID
-    _setClientIdAndLabels: function() 
+    setClientIdAndLabels: function(id) 
     {
       qx.bom.Stylesheet.createElement(".clientId {font-weight:bold; padding-top:10px;}");
-      this.__pushId = qx.core.Init.getApplication().runner.getPushClientId();
+      this.__pushId = id;
       //creating two clientId-Labels for the two views
       var mainClientLabel = new qx.ui.mobile.basic.Label("Client " + this.__pushId);
       mainClientLabel.addCssClass("clientId");
@@ -270,7 +270,6 @@ qx.Class.define("testrunner.view.mobile.Mobile", {
           break;
         case "loading" :
           this.setStatus("Loading tests...");
-          this._setClientIdAndLabels();         
           break;
         case "ready" :
           this.setStatus(this.getSelectedTests().length + " tests ready to run.");
