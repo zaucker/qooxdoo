@@ -17,6 +17,12 @@
 
 ************************************************************************ */
 
+/* ************************************************************************
+#asset(testrunner/eventsource.js)
+************************************************************************ */
+
+
+
 /**
  * The TestRunner is responsible for loading the test classes and keeping track
  * of the test suite's state.
@@ -74,6 +80,45 @@ qx.Class.define("testrunner.runner.TestRunner", {
     _externalTestClasses : null,
 
     TEST_MIXINS : null,
+    
+    getPushClientId : function()
+    {
+      return this.__pushClientId;
+    },
+    
+    _eventSourceHandler : function() {
+      var eventsource = new EventSource("../../../events");
+      this.__iframe = this.view.getIframe();
+      this.frameWindow = qx.bom.Iframe.getWindow(this.__iframe);
+          
+      eventsource.addEventListener('clientId', function(event) {
+        this.__pushClientId = event.data;
+      }.bind(this), false);
+          
+      eventsource.addEventListener('autUri', function() {
+        // Load the tests from a standalone AUT
+        qx.event.Registration.addListener(this.__iframe, "load", this._onLoadIframe, this);
+        var src = event.data + "?testclass=" + this._testNameSpace;
+        this.setTestSuiteState("loading");
+        this.view.setAutUri(src);
+      }.bind(this), false);
+          
+      eventsource.addEventListener('autCode', function(event) {
+        this.setTestSuiteState("loading");
+        //obly implemented in view.Console
+        //this.view.setAutCode(data);
+            
+        var doc = qx.bom.Iframe.getDocument(this.__iframe);
+        var el =doc.createElement("script");
+        el.text = event.data;
+        doc.getElementsByTagName("head")[0].appendChild(el);
+            
+        this.loader = qx.bom.Iframe.getWindow(this.__iframe).testrunner.TestLoader.getInstance();
+        this.loader.setTestNamespace(this._testNameSpace);
+        //this._wrapAssertions(this.frameWindow);
+        this._getTestModel();
+      }.bind(this), false);
+    },
 
 
     _getTestNameSpace : function()
@@ -106,38 +151,17 @@ qx.Class.define("testrunner.runner.TestRunner", {
           this._loadExternalTests();
           break;
         case "push":
-          var eventsource = new EventSource("../../../events");
-          this.__iframe = this.view.getIframe();
-          this.frameWindow = qx.bom.Iframe.getWindow(this.__iframe);
-          
-          eventsource.addEventListener('clientId', function(event) {
-            this.__pushClientId = event.data;
-          }.bind(this), false);
-          
-          eventsource.addEventListener('autUri', function() {
-            // Load the tests from a standalone AUT
-            qx.event.Registration.addListener(this.__iframe, "load", this._onLoadIframe, this);
-            var src = event.data + "?testclass=" + this._testNameSpace;
-            this.setTestSuiteState("loading");
-            this.view.setAutUri(src);
-          }.bind(this), false);
-          
-          eventsource.addEventListener('autCode', function(event) {
-            this.setTestSuiteState("loading");
-            //obly implemented in view.Console
-            //this.view.setAutCode(data);
-            
-            var doc = qx.bom.Iframe.getDocument(this.__iframe);
-            var el =doc.createElement("script");
-            el.text = event.data;
-            doc.getElementsByTagName("head")[0].appendChild(el);
-            
-            this.loader = qx.bom.Iframe.getWindow(this.__iframe).testrunner.TestLoader.getInstance();
-            this.loader.setTestNamespace(this._testNameSpace);
-            //this._wrapAssertions(this.frameWindow);
-            this._getTestModel();
-          }.bind(this), false);
-          
+          // load the EventSource-Poyfil if needed
+          if (typeof window.EventSource == "undefined") {
+            var polyfilUri = qx.util.ResourceManager.getInstance().toUri("testrunner/eventsource.js");
+            var req = new qx.bom.request.Script();
+            req.onload = this._eventSourceHandler.bind(this);
+            req.open("GET", polyfilUri);
+            req.send();
+          }
+          else {
+            this._eventSourceHandler();
+          }  
           break;
       }
     },
