@@ -77,7 +77,7 @@ qx.Class.define("pushtestreporter.Application",
         container.add(label);
         
         var list = new qx.ui.list.List(null);
-        list.setWidth(350);
+        list.setWidth(300);
         container.add(list);
         var array = new qx.data.Array();
         for (var i=counter; i>counter-10; i--) {
@@ -102,17 +102,10 @@ qx.Class.define("pushtestreporter.Application",
       var self = this;
 	  
 	    es.addEventListener('results', function (event) {
-      
-        // var list2 = new qx.ui.list.List(null);
-        // list2.setWidth(200);
-        // container.add(list2, {left: 100});
-        // 
-        // var s1 = list.getChildControl("scrollbar-y");
-        // var s2 = list2.getChildControl("scrollbar-y");
-        // 
-        // s1.bind("position", s2, "position");
-        // s2.bind("position", s1, "position");
+        
         var result = JSON.parse(event.data);
+        var model = qx.data.marshal.Json.createModel(result);
+ 
         var container = clients[result.client];
                 
         var array = new qx.data.Array();
@@ -121,8 +114,28 @@ qx.Class.define("pushtestreporter.Application",
           array.push(test);
         }
         var list = container.getChildren()[1];
-        list.setModel(array);
-        list.refresh();
+        list.setModel(model.getTests());
+        
+        list.setDelegate({
+          bindItem : function(controller, item, id) {
+            controller.bindProperty("name", "label", {}, item, id);
+            var colorOptions = {
+              converter : function(value) {
+                switch(value) {
+                  case "success":
+                    return "#007F00";
+                  case "skip":
+                    return "#666666";
+                  default:
+                    return "#9E0000";
+                }
+              }
+            };
+            controller.bindProperty("state", "textColor", colorOptions, item, id);
+          }
+        });
+        
+       //list.refresh();
         // list2.setModel(array);
         // list2.refresh();
 	    });
