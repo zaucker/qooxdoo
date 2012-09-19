@@ -60,7 +60,7 @@ qx.Class.define("testrunner.view.mobile.Mobile", {
         this.__suiteResults = {
           startedAt : new Date().getTime(),
           finishedAt : null,
-          tests : {}
+          tests : []
         };
         this.fireEvent("runTests");
       }
@@ -271,6 +271,12 @@ qx.Class.define("testrunner.view.mobile.Mobile", {
           //re-apply selection so the same suite can be executed again
           this.setSelectedTests(new qx.data.Array());
           this.setSelectedTests(this.__testList);
+          //send test-results to reporting-server
+          this.__suiteResults.client = qx.core.Init.getApplication().runner.__pushClientId;
+          var req = new qx.io.request.Xhr("/results", "POST");
+          req.setRequestData(JSON.stringify(this.__suiteResults));
+          req.send();
+          console.log(JSON.stringify(this.__suiteResults));
           break;
         case "aborted" :
           this.setSelectedTests(new qx.data.Array());
@@ -327,14 +333,25 @@ qx.Class.define("testrunner.view.mobile.Mobile", {
 
       var exceptions = testResultData.getExceptions();
 
-      //Update test results map
-      if (!this.__suiteResults.tests[testName]) {
-        this.__suiteResults.tests[testName] = {};
+      var test;
+
+      for (var i = 0, l = this.__suiteResults.tests.length; i < l; i++) {
+        if (testName == this.__suiteResults.tests[i].name) {
+          test = this.__suiteResults.tests[i];
+        }
       }
-      this.__suiteResults.tests[testName].state = state;
+      
+      if (!test) {
+        test = {};
+        this.__suiteResults.tests.push(test);
+      }
+
+      //Update test results map
+      test.name = testName;
+      test.state = state;
 
       if (exceptions) {
-        this.__suiteResults.tests[testName].exceptions = [];
+        test.exceptions = [];
         for (var i=0,l=exceptions.length; i<l; i++) {
           var ex = exceptions[i].exception;
           var type = ex.classname || ex.type || "Error";
@@ -356,11 +373,11 @@ qx.Class.define("testrunner.view.mobile.Mobile", {
             serializedEx.stacktrace = stacktrace;
           }
 
-          this.__suiteResults.tests[testName].exceptions.push(serializedEx);
+          test.exceptions.push(serializedEx);
         }
       }
     },
-
+  
     /**
      * Returns a results summary for a finished test suite
      *
@@ -371,19 +388,19 @@ qx.Class.define("testrunner.view.mobile.Mobile", {
       var pass = 0;
       var fail = 0;
       var skip = 0;
-      for (var test in this.__suiteResults.tests) {
-        switch (this.__suiteResults.tests[test].state) {
-          case "success":
-            pass++;
-            break;
-          case "error":
-          case "failure":
-            fail++;
-            break;
-          case "skip":
-            skip++;
-        }
-      }
+      for (var i = 0, l = this.__suiteResults.tests.length; i < l; i++) {
+         switch (this.__suiteResults.tests[i].state) {
+           case "success":
+             pass++;
+             break;
+           case "error":
+           case "failure":
+             fail++;
+             break;
+           case "skip":
+             skip++;
+         }
+       }
 
       return "<span class='failure'>" + fail + "</span>" + " failed, " +
              "<span class='success'>" + pass + "</span>" + " passed, " +
