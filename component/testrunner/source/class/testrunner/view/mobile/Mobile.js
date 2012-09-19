@@ -26,7 +26,7 @@
 /**
  * Test Runner mobile view
  */
-qx.Class.define("testrunner.view.Mobile", {
+qx.Class.define("testrunner.view.mobile.Mobile", {
 
   extend : testrunner.view.Abstract,
 
@@ -39,7 +39,7 @@ qx.Class.define("testrunner.view.Mobile", {
   {
     __mainPage : null,
     __detailPage : null,
-    __runButton : null,
+    __mainButton : null,
     __iframe : null,
     __testList : null,
     __testListWidget : null,
@@ -50,7 +50,7 @@ qx.Class.define("testrunner.view.Mobile", {
     /**
      * Run the suite, or stop a running suite.
      */
-    _onRunButtonTap : function()
+    _onMainButtonTap : function()
     {
       var suiteState = this.getTestSuiteState();
       if (suiteState == "ready" || suiteState == "finished" || suiteState == "aborted") {
@@ -60,7 +60,7 @@ qx.Class.define("testrunner.view.Mobile", {
         this.__suiteResults = {
           startedAt : new Date().getTime(),
           finishedAt : null,
-          tests : []
+          tests : {}
         };
         this.fireEvent("runTests");
       }
@@ -78,9 +78,9 @@ qx.Class.define("testrunner.view.Mobile", {
       var mainPage = this.__mainPage = new qx.ui.mobile.page.NavigationPage();
       mainPage.setTitle("qx Test Runner");
 
-      var runButton = this.__runButton = new testrunner.view.MainButton();
-      runButton.addListener("tap", this._onRunButtonTap, this);
-      mainPage.getRightContainer().add(runButton);
+      var mainButton = this.__mainButton = new testrunner.view.mobile.MainButton();
+      mainButton.addListener("tap", this._onMainButtonTap, this);
+      mainPage.getRightContainer().add(mainButton);
 
       mainPage.addListener("initialize", function()
       {
@@ -271,14 +271,6 @@ qx.Class.define("testrunner.view.Mobile", {
           //re-apply selection so the same suite can be executed again
           this.setSelectedTests(new qx.data.Array());
           this.setSelectedTests(this.__testList);
-          this.__runButton.setValue("Run");
-          
-          this.__suiteResults.client = qx.core.Init.getApplication().runner.__pushClientId;
-          var req = new qx.io.request.Xhr("/results", "POST");
-          req.setRequestData(JSON.stringify(this.__suiteResults));
-          req.send();
-          console.log(JSON.stringify(this.__suiteResults));
-          
           break;
         case "aborted" :
           this.setSelectedTests(new qx.data.Array());
@@ -286,7 +278,7 @@ qx.Class.define("testrunner.view.Mobile", {
           this.setStatus("Test run aborted");
           break;
       }
-      this.__runButton.setState(value);
+      this.__mainButton.setState(value);
     },
 
     /**
@@ -334,26 +326,15 @@ qx.Class.define("testrunner.view.Mobile", {
       var state = testResultData.getState();
 
       var exceptions = testResultData.getExceptions();
-      
-      var test;
-
-      for (var i = 0, l = this.__suiteResults.tests.length; i < l; i++) {
-        if (testName == this.__suiteResults.tests[i].name) {
-          test = this.__suiteResults.tests[i];
-        }
-      }
-      
-      if (!test) {
-        test = {};
-        this.__suiteResults.tests.push(test);
-      }
 
       //Update test results map
-      test.name = testName;
-      test.state = state;
+      if (!this.__suiteResults.tests[testName]) {
+        this.__suiteResults.tests[testName] = {};
+      }
+      this.__suiteResults.tests[testName].state = state;
 
       if (exceptions) {
-        test.exceptions = [];
+        this.__suiteResults.tests[testName].exceptions = [];
         for (var i=0,l=exceptions.length; i<l; i++) {
           var ex = exceptions[i].exception;
           var type = ex.classname || ex.type || "Error";
@@ -375,7 +356,7 @@ qx.Class.define("testrunner.view.Mobile", {
             serializedEx.stacktrace = stacktrace;
           }
 
-          test.exceptions.push(serializedEx);
+          this.__suiteResults.tests[testName].exceptions.push(serializedEx);
         }
       }
     },
@@ -390,9 +371,8 @@ qx.Class.define("testrunner.view.Mobile", {
       var pass = 0;
       var fail = 0;
       var skip = 0;
-      
-     for (var i = 0, l = this.__suiteResults.tests.length; i < l; i++) {
-        switch (this.__suiteResults.tests[i].state) {
+      for (var test in this.__suiteResults.tests) {
+        switch (this.__suiteResults.tests[test].state) {
           case "success":
             pass++;
             break;
