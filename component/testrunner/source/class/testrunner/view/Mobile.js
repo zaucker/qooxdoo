@@ -60,7 +60,7 @@ qx.Class.define("testrunner.view.Mobile", {
         this.__suiteResults = {
           startedAt : new Date().getTime(),
           finishedAt : null,
-          tests : {}
+          tests : []
         };
         this.fireEvent("runTests");
       }
@@ -294,6 +294,7 @@ qx.Class.define("testrunner.view.Mobile", {
           var req = new qx.io.request.Xhr("/results", "POST");
           req.setRequestData(JSON.stringify(this.__suiteResults));
           req.send();
+          console.log(JSON.stringify(this.__suiteResults));
           
           break;
         case "aborted" :
@@ -350,15 +351,26 @@ qx.Class.define("testrunner.view.Mobile", {
       var state = testResultData.getState();
 
       var exceptions = testResultData.getExceptions();
+      
+      var test;
+
+      for (var i = 0, l = this.__suiteResults.tests.length; i < l; i++) {
+        if (testName == this.__suiteResults.tests[i].name) {
+          test = this.__suiteResults.tests[i];
+        }
+      }
+      
+      if (!test) {
+        test = {};
+        this.__suiteResults.tests.push(test);
+      }
 
       //Update test results map
-      if (!this.__suiteResults.tests[testName]) {
-        this.__suiteResults.tests[testName] = {};
-      }
-      this.__suiteResults.tests[testName].state = state;
+      test.name = testName;
+      test.state = state;
 
       if (exceptions) {
-        this.__suiteResults.tests[testName].exceptions = [];
+        test.exceptions = [];
         for (var i=0,l=exceptions.length; i<l; i++) {
           var ex = exceptions[i].exception;
           var type = ex.classname || ex.type || "Error";
@@ -380,7 +392,7 @@ qx.Class.define("testrunner.view.Mobile", {
             serializedEx.stacktrace = stacktrace;
           }
 
-          this.__suiteResults.tests[testName].exceptions.push(serializedEx);
+          test.exceptions.push(serializedEx);
         }
       }
     },
@@ -395,8 +407,9 @@ qx.Class.define("testrunner.view.Mobile", {
       var pass = 0;
       var fail = 0;
       var skip = 0;
-      for (var test in this.__suiteResults.tests) {
-        switch (this.__suiteResults.tests[test].state) {
+      
+     for (var i = 0, l = this.__suiteResults.tests.length; i < l; i++) {
+        switch (this.__suiteResults.tests[i].state) {
           case "success":
             pass++;
             break;
