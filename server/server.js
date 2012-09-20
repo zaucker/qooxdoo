@@ -48,23 +48,29 @@ function handleFunction(request, response) {
   else if(request.url == "/events") {
     //console.log(request.headers["user-agent"]);
     
-    // TODO Handling for reconnect (last-event-id)
-    clients.push(response);
-    // clientId - 1 = index in clients[]
-    var clientId = clients.indexOf(response)+1;
+    var client = {};
+    
+    if (request.headers['last-event-id']) {
+      var lastId = parseInt(request.headers['last-event-id'])-1;
+      client.id = lastId;
+      
+    }
+    else {
+      clients.push(response);
+      // clientId - 1 = index in clients[]
+      client.id = clients.indexOf(response)+1;
+    }
     
     setUpResponseForSSE(response);
     
     if(masterClient != null) {
       
-      var client = {};
-      client.id = clientId;
       client.device = detectDevice(request.headers["user-agent"]);
       
       masterClient.write('event:clientJoined' + '\n' +
                             'data:' + JSON.stringify(client) + '\n\n');
       response.write('event:clientId' + '\n' +
-                          'data:' + clientId + '\n\n'); 
+                          'data:' + client.id + '\n\n'); 
     }
     
     else {
@@ -99,7 +105,7 @@ function handleFunction(request, response) {
     fs.watchFile(sourceTests, function(curr, prev) {
       var responseText = [
           'event:' + 'autUri',
-          'data:' + "html/tests-source.html"
+          'data:' + "../source/html/tests-source.html"
         ].join("\n") + "\n\n";
     
       response.write(responseText);
@@ -162,6 +168,7 @@ function detectDevice(userAgentString){
   }
   
   else if (match[1] && match[2]) {
+    //doesnt work with 5.1.1. shows: 5.1_1
     return match[1] + String(match[2]).replace(/_/,".");
   } 
   
