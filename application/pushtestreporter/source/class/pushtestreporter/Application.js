@@ -107,7 +107,7 @@ qx.Class.define("pushtestreporter.Application",
       var self = this;
 	  
 	    es.addEventListener('results', function (event) {
-        
+                
         var result = JSON.parse(event.data);
         var model = qx.data.marshal.Json.createModel(result);
  
@@ -118,7 +118,7 @@ qx.Class.define("pushtestreporter.Application",
         for (var test in result.tests) {
           array.push(test);
         }
-        var list = container.getChildren()[1];
+        var list = container.getChildren()[2];
         list.setModel(model.getTests());
         
         list.setDelegate({
