@@ -47,6 +47,8 @@ qx.Class.define("testrunner.view.mobile.Mobile", {
     __statusLabel : null,
     __suiteResults : null,
     __pushId : null,
+    __mainClientLabel : null,
+    __detailClientLabel : null,
 
     /**
      * Run the suite, or stop a running suite.
@@ -246,13 +248,22 @@ qx.Class.define("testrunner.view.mobile.Mobile", {
     {
       qx.bom.Stylesheet.createElement(".clientId {font-weight:bold; padding-top:10px;}");
       this.__pushId = id;
+      
       //creating two clientId-Labels for the two views
-      var mainClientLabel = new qx.ui.mobile.basic.Label("Client " + this.__pushId);
-      mainClientLabel.addCssClass("clientId");
-      var detailClientLabel = new qx.ui.mobile.basic.Label("Client " + this.__pushId);
-      detailClientLabel.addCssClass("clientId");
-      this.__mainPage.getRightContainer().add(mainClientLabel);
-      this.__detailPage.getRightContainer().add(detailClientLabel);
+      if(!this.__mainClientLabel) {
+        this.__mainClientLabel = new qx.ui.mobile.basic.Label();
+        this.__mainClientLabel.addCssClass("clientId");
+        this.__mainPage.getRightContainer().add(this.__mainClientLabel);
+      }
+      this.__mainClientLabel.setValue("Client " + this.__pushId);
+      
+      if(!this.__detailClientLabel) {
+        this.__detailClientLabel = new qx.ui.mobile.basic.Label();
+        this.__detailClientLabel.addCssClass("clientId");
+        this.__detailPage.getRightContainer().add(this.__detailClientLabel);
+      }
+      this.__detailClientLabel.setValue("Client " + this.__pushId);
+      
     },
 
     /**
