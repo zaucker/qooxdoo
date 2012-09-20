@@ -47,6 +47,9 @@ function handleFunction(request, response) {
   
   else if(request.url == "/events") {
     
+    //console.log(detectMobileDevice(request.headers["user-agent"]));
+    
+    
     // TODO Handling for reconnect (last-event-id)
     clients.push(response);
     var clientId = clients.indexOf(response)+1;
@@ -140,9 +143,21 @@ function setUpResponseForSSE (response) {
    */
   setInterval(function () {
     response.write(':\n');
-  } , 15000);
-  
+  } , 15000); 
 }
+
+function detectMobileDevice(userAgentString){
+  var reg = /android.+mobile|ip(hone|od)|bada\/|blackberry|maemo|opera m(ob|in)i|fennec|NetFront|phone|psp|symbian|windows (ce|phone)|xda/i
+  var match = reg.exec(userAgentString);
+  
+  if (match && match[1]) {
+    return match[0];
+  } 
+  else {
+    return "Desktop"
+  }
+}
+ 
 
 // var io = require('socket.io').listen(http);
 // 
