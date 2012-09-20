@@ -47,7 +47,7 @@ function handleFunction(request, response) {
   
   else if(request.url == "/events") {
     
-    //console.log(detectMobileDevice(request.headers["user-agent"]));
+    console.log(detectMobileDevice(request.headers["user-agent"]));
     
     
     // TODO Handling for reconnect (last-event-id)
@@ -64,6 +64,9 @@ function handleFunction(request, response) {
     }
     
     else {
+      /*
+        TODO: Fix this. Causes a reconnection-loop if master is not available
+      */
       response.end();
     }
     
