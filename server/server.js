@@ -46,19 +46,23 @@ function handleFunction(request, response) {
   }
   
   else if(request.url == "/events") {
-    console.log(request.headers["user-agent"]);
-    console.log(detectMobileDevice(request.headers["user-agent"]));
-    
+    //console.log(request.headers["user-agent"]);
     
     // TODO Handling for reconnect (last-event-id)
     clients.push(response);
+    // clientId - 1 = index in clients[]
     var clientId = clients.indexOf(response)+1;
     
     setUpResponseForSSE(response);
     
     if(masterClient != null) {
+      
+      var client = {};
+      client.id = clientId;
+      client.device = detectDevice(request.headers["user-agent"]);
+      
       masterClient.write('event:clientJoined' + '\n' +
-                            'data:' + clientId + '\n\n');
+                            'data:' + JSON.stringify(client) + '\n\n');
       response.write('event:clientId' + '\n' +
                           'data:' + clientId + '\n\n'); 
     }
@@ -149,7 +153,7 @@ function setUpResponseForSSE (response) {
   } , 15000); 
 }
 
-function detectMobileDevice(userAgentString){
+function detectDevice(userAgentString){
   var reg = /(iP(?:hone|od|ad))(?:.*?)( [1-6](_[0-9])+)|Android [0-9](\.[0-9])+|Windows Phone OS [7-9]\.[0-9]/ig;
   var match = reg.exec(userAgentString);
   

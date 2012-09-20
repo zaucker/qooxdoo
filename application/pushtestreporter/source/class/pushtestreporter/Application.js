@@ -70,11 +70,16 @@ qx.Class.define("pushtestreporter.Application",
       es.addEventListener('open', function (event) {
       });
       es.addEventListener('clientJoined', function (event) {
-        var container = clients[event.data] = new qx.ui.container.Composite();
+        var client = JSON.parse(event.data);
+        
+        var container = clients[client.id] = new qx.ui.container.Composite();
         container.setLayout(new qx.ui.layout.VBox(5));
         
-        var label = new qx.ui.basic.Label("Client " + event.data);
-        container.add(label);
+        var clientLabel = new qx.ui.basic.Label("Client " + client.id);
+        container.add(clientLabel);
+        
+        var devicelLabel = new qx.ui.basic.Label(client.device);
+        container.add(devicelLabel);
         
         var list = new qx.ui.list.List(null);
         list.setWidth(300);
