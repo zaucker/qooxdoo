@@ -286,8 +286,27 @@ qx.Class.define("testrunner.view.mobile.Mobile", {
           //re-apply selection so the same suite can be executed again
           this.setSelectedTests(new qx.data.Array());
           this.setSelectedTests(this.__testList);
-          //send test-results to reporting-server
+          
           this.__suiteResults.client = this.__pushId;
+          
+          // saving Environment-keys result data-structure
+          this.__suiteResults.environment = [];
+          var keys = ["device.name", 
+                      "device.type",
+                      "browser.documentmode",
+                      "browser.name",
+                      "browser.quirksmode",
+                      "browser.version",
+                      "engine.name",
+                      "engine.version"];          
+          for (var i = 0; i < keys.length; i++){
+            var entry = {};
+            entry.name = keys[i];
+            entry.value = qx.core.Environment.get(keys[i]);
+            this.__suiteResults.environment.push(entry);
+          };
+          
+          //send test-results to reporting-server
           var req = new qx.io.request.Xhr("/results", "POST");
           req.setRequestData(JSON.stringify(this.__suiteResults));
           req.send();
