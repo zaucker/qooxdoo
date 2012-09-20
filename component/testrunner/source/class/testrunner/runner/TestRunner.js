@@ -87,6 +87,9 @@ qx.Class.define("testrunner.runner.TestRunner", {
     },
     
     _eventSourceHandler : function() {
+      
+      this.view.setAutoRun(false);
+      
       var eventsource = new EventSource("../../../events");
       this.__iframe = this.view.getIframe();
       this.frameWindow = qx.bom.Iframe.getWindow(this.__iframe);

@@ -29,6 +29,8 @@
 qx.Class.define("testrunner.view.mobile.Mobile", {
 
   extend : testrunner.view.Abstract,
+  
+  include : [testrunner.view.MAutoRun],
 
   construct : function()
   {
@@ -49,6 +51,19 @@ qx.Class.define("testrunner.view.mobile.Mobile", {
     __pushId : null,
     __mainClientLabel : null,
     __detailClientLabel : null,
+    
+    /**
+     * inititates __suiteResults and runs the tests
+     */
+    _runTests : function()
+    {
+      this.__suiteResults = {
+        startedAt : new Date().getTime(),
+        finishedAt : null,
+        tests : []
+      };
+      this.fireEvent("runTests");
+    },
 
     /**
      * Run the suite, or stop a running suite.
@@ -60,12 +75,7 @@ qx.Class.define("testrunner.view.mobile.Mobile", {
         if (suiteState == "finished" || suiteState == "aborted") {
           this._clearResults();
         }
-        this.__suiteResults = {
-          startedAt : new Date().getTime(),
-          finishedAt : null,
-          tests : []
-        };
-        this.fireEvent("runTests");
+        this._runTests();
       }
       else if (suiteState == "running") {
         this.fireEvent("stopTests");
@@ -284,6 +294,10 @@ qx.Class.define("testrunner.view.mobile.Mobile", {
           break;
         case "ready" :
           this.setStatus(this.getSelectedTests().length + " tests ready to run.");
+          if(this.getAutoRun()) {
+            this._runTests();
+          }
+          
           break;
         case "error" :
           this.setStatus("Couldn't load test suite!");
