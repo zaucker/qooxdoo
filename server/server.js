@@ -46,7 +46,7 @@ function handleFunction(request, response) {
   }
   
   else if(request.url == "/events") {
-    
+    console.log(request.headers["user-agent"]);
     console.log(detectMobileDevice(request.headers["user-agent"]));
     
     
@@ -150,15 +150,21 @@ function setUpResponseForSSE (response) {
 }
 
 function detectMobileDevice(userAgentString){
-  var reg = /android.+mobile|ip(hone|od)|bada\/|blackberry|maemo|opera m(ob|in)i|fennec|NetFront|phone|psp|symbian|windows (ce|phone)|xda/i
+  var reg = /(iP(?:hone|od|ad))(?:.*?)( [1-6](_[0-9])+)|Android [0-9](\.[0-9])+|Windows Phone OS [7-9]\.[0-9]/ig;
   var match = reg.exec(userAgentString);
   
-  if (match && match[1]) {
-    return match[0];
-  } 
-  else {
-    return "Desktop"
+  if (!match) {
+    return "Other";
   }
+  
+  else if (match[1] && match[2]) {
+    return match[1] + String(match[2]).replace(/_/,".");
+  } 
+  
+  else {
+    return match[0];
+  }
+
 }
  
 
