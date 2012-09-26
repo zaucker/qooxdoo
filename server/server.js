@@ -41,6 +41,8 @@ function handleFunction(request, response) {
         
         masterClient.write('event:results' + '\n' +
                           'data:' + fullBody + '\n\n'); 
+                          console.log('event:results' + '\n' +
+                                            'data:' + fullBody + '\n\n'); 
       });
     }
   }
@@ -106,9 +108,11 @@ function handleFunction(request, response) {
       var responseText = [
           'event:' + 'autUri',
           'data:' + "../source/html/tests-source.html"
+          // 'data:' + "./html/tests-source.html"
         ].join("\n") + "\n\n";
     
       response.write(responseText);
+      
     });
    
     request.on('close', function () {
