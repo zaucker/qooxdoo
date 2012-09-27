@@ -61,9 +61,16 @@ qx.Class.define("pushtestreporter.Application",
       var clients = [];
       
       // create the composite
+      
+      var scroll = new qx.ui.container.Scroll().set({
+         width: 640,
+         height: 800
+       });
+      
       var mainContainer = new qx.ui.container.Composite()
       mainContainer.setLayout(new qx.ui.layout.HBox(5));
-      this.getRoot().add(mainContainer);
+      this.getRoot().add(scroll);
+      scroll.add(mainContainer);
     
       es.addEventListener('open', function (event) {
       });
@@ -73,14 +80,14 @@ qx.Class.define("pushtestreporter.Application",
         var container = clients[client.id] = new qx.ui.container.Composite();
         container.setLayout(new qx.ui.layout.VBox(5));
         
-        var clientLabel = new qx.ui.basic.Label("Client " + client.id);
+        var clientLabel = new qx.ui.basic.Label("Client " + client.id + ": " +
+                                                client.device);
         container.add(clientLabel);
-        
-        var devicelLabel = new qx.ui.basic.Label(client.device);
-        container.add(devicelLabel);
         
         var list = new qx.ui.list.List(null);
         list.setWidth(300);
+        list.setHeight(280);
+        
         container.add(list);
 
         mainContainer.add(container);
@@ -133,9 +140,6 @@ qx.Class.define("pushtestreporter.Application",
           }
         });
         
-       //list.refresh();
-        // list2.setModel(array);
-        // list2.refresh();
 	    });
 	  
       es.addEventListener('error', function (event) {
