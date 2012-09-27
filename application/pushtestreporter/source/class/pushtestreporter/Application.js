@@ -65,8 +65,6 @@ qx.Class.define("pushtestreporter.Application",
       mainContainer.setLayout(new qx.ui.layout.HBox(5));
       this.getRoot().add(mainContainer);
     
-      var counter = 10;
-
       es.addEventListener('open', function (event) {
       });
       es.addEventListener('clientJoined', function (event) {
@@ -84,12 +82,7 @@ qx.Class.define("pushtestreporter.Application",
         var list = new qx.ui.list.List(null);
         list.setWidth(300);
         container.add(list);
-        var array = new qx.data.Array();
-        for (var i=counter; i>counter-10; i--) {
-          array.push(i);
-        }
-        list.setModel(array);
-        counter += 10;
+
         mainContainer.add(container);
       });
         
