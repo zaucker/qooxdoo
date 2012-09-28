@@ -474,6 +474,7 @@ qx.Class.define("testrunner.view.mobile.Mobile", {
     _onListChangeSelection : function(ev)
     {
       var testName = qx.lang.Object.getKeyFromValue(this.__testRows, ev.getData());
+      var nameLabel = new qx.ui.mobile.basic.Label(testName);
       for (var i=0,l=this.__testList.length; i<l; i++) {
         if (this.__testList.getItem(i).getFullName() == testName) {
           var exceptions = this.__testList.getItem(i).getExceptions();
@@ -487,7 +488,11 @@ qx.Class.define("testrunner.view.mobile.Mobile", {
             stackLabel.setWrap(true);
             this.__detailPage.removeAll();
             var detailContainer = new qx.ui.mobile.container.Composite(new qx.ui.mobile.layout.VBox());
+            detailContainer.add(new qx.ui.mobile.form.Title("Test Name"));
+            detailContainer.add(nameLabel);
+            detailContainer.add(new qx.ui.mobile.form.Title("Message"));
             detailContainer.add(msgLabel);
+            detailContainer.add(new qx.ui.mobile.form.Title("Stack Trace"));
             detailContainer.add(stackLabel);
             var detailGroup = new qx.ui.mobile.form.Group([detailContainer]);
             this.__detailPage.add(detailGroup);
