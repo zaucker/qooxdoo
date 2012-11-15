@@ -90,7 +90,7 @@ qx.Class.define("pushtestreporter.Application",
         
         var list = new qx.ui.list.List(null);
         list.setWidth(320);
-        list.setHeight(280);
+        list.setHeight(180);
         container.add(list);
         
         var textArea = new qx.ui.form.TextArea();
@@ -99,6 +99,16 @@ qx.Class.define("pushtestreporter.Application",
         container.add(textArea);
         
         mainContainer.add(container);
+        
+        if (mainContainer.indexOf(container) != 0) {
+          
+          var ownScrollBar = container.getChildren()[1].getChildControl("scrollbar-y");
+          var firstScrollBar = mainContainer.getChildren()[0].getChildren()[1].getChildControl("scrollbar-y");
+          
+          ownScrollBar.bind("position", firstScrollBar, "position");
+          firstScrollBar.bind("position", ownScrollBar, "position");
+        }
+        
       });
         
        
