@@ -31,6 +31,8 @@ qx.Class.define("pushtestreporter.Application",
 
   members :
   {
+    __list : null,
+    
     /**
      * This method contains the initial application code and gets called 
      * during startup of the application
@@ -80,15 +82,36 @@ qx.Class.define("pushtestreporter.Application",
         var container = clients[client.id] = new qx.ui.container.Composite();
         container.setLayout(new qx.ui.layout.VBox(5));
         
-        var clientLabel = new qx.ui.basic.Label("Client " + client.id + ": " +
-                                                client.device);
+        var clientLabel = new qx.ui.basic.Label();
+        clientLabel.setRich(true);
+        clientLabel.setValue("<b>Client " + client.id + ": " + client.device + "</b>")
         container.add(clientLabel);
         
-        var list = new qx.ui.list.List(null);
-        list.setWidth(300);
+        var list = this.__list = new qx.ui.list.List(null);
+        list.setWidth(320);
         list.setHeight(280);
-        
         container.add(list);
+        
+        var textArea = new qx.ui.form.TextArea();
+        textArea.setWidth(320);
+        textArea.setHeight(280);
+        container.add(textArea);
+          
+        list.getSelection().addListener('change', function (e) {
+          var selection = list.getSelection();
+          
+            var message = "";
+            for (var x = 0; x < selection.length; x++) {
+              var item = selection.getItem(x);
+              var exceptions = item.getExceptions();
+              for (var i = 0; i < exceptions.length; i++) {
+                message += exceptions.getItem(i).getMessage();
+              }
+            }
+        
+            textArea.setValue(message);
+          
+        }, this);
 
         mainContainer.add(container);
       });
@@ -118,7 +141,7 @@ qx.Class.define("pushtestreporter.Application",
         for (var test in result.tests) {
           array.push(test);
         }
-        var list = container.getChildren()[2];
+        var list = this.__list;
         list.setModel(model.getTests());
         
         list.setDelegate({
@@ -146,5 +169,9 @@ qx.Class.define("pushtestreporter.Application",
       });      
 
     }
+  },
+  
+  destruct : function() {
+    this.__list = null;
   }
 });
