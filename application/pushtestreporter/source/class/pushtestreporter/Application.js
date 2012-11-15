@@ -31,7 +31,7 @@ qx.Class.define("pushtestreporter.Application",
 
   members :
   {
-    __list : null,
+   // __list : null,
     
     /**
      * This method contains the initial application code and gets called 
@@ -76,6 +76,7 @@ qx.Class.define("pushtestreporter.Application",
     
       es.addEventListener('open', function (event) {
       });
+      
       es.addEventListener('clientJoined', function (event) {
         var client = JSON.parse(event.data);
         
@@ -87,7 +88,7 @@ qx.Class.define("pushtestreporter.Application",
         clientLabel.setValue("<b>Client " + client.id + ": " + client.device + "</b>")
         container.add(clientLabel);
         
-        var list = this.__list = new qx.ui.list.List(null);
+        var list = new qx.ui.list.List(null);
         list.setWidth(320);
         list.setHeight(280);
         container.add(list);
@@ -96,23 +97,7 @@ qx.Class.define("pushtestreporter.Application",
         textArea.setWidth(320);
         textArea.setHeight(280);
         container.add(textArea);
-          
-        list.getSelection().addListener('change', function (e) {
-          var selection = list.getSelection();
-          
-            var message = "";
-            for (var x = 0; x < selection.length; x++) {
-              var item = selection.getItem(x);
-              var exceptions = item.getExceptions();
-              for (var i = 0; i < exceptions.length; i++) {
-                message += exceptions.getItem(i).getMessage();
-              }
-            }
         
-            textArea.setValue(message);
-          
-        }, this);
-
         mainContainer.add(container);
       });
         
@@ -141,7 +126,7 @@ qx.Class.define("pushtestreporter.Application",
         for (var test in result.tests) {
           array.push(test);
         }
-        var list = this.__list;
+        var list = container.getChildren()[1];
         list.setModel(model.getTests());
         
         list.setDelegate({
@@ -163,6 +148,25 @@ qx.Class.define("pushtestreporter.Application",
           }
         });
         
+        list.getSelection().addListener('change', function (e) {
+          var selection = list.getSelection();
+          
+            var message = "";
+            for (var x = 0; x < selection.length; x++) {
+              var item = selection.getItem(x);
+              var exceptions = item.getExceptions();
+              for (var i = 0; i < exceptions.length; i++) {
+                message += exceptions.getItem(i).getMessage();
+              }
+            }
+            
+            var textArea = container.getChildren()[2];
+            textArea.setValue(message);
+          
+        }, this);
+        
+        
+        
 	    });
 	  
       es.addEventListener('error', function (event) {
@@ -171,7 +175,7 @@ qx.Class.define("pushtestreporter.Application",
     }
   },
   
-  destruct : function() {
-    this.__list = null;
-  }
+  // destruct : function() {
+  //    this.__list = null;
+  //  }
 });
