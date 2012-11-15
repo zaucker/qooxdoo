@@ -4,7 +4,7 @@ body {
   margin: 0px;
   font-family: 'Alike Angular', serif;
   color: #666;
-  font-size: 17px;
+  font-size: 1.1em;
   word-spacing: 0.15em;
 }
 
@@ -36,7 +36,7 @@ h1 {
 /* TREE */
 #treeContainer {
   float: left;
-  width: 250px;
+  width: 200px;
   margin-bottom: 40px;
 }
 

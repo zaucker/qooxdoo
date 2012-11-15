@@ -340,11 +340,6 @@ qx.Class.define("playground.Application",
         throw new Error("Mode '" + mode + "' not supported");
       }
 
-      // only set new mode if not already set
-      if (this.__mode == mode) {
-        return true;
-      }
-
       // only change the mode if no code gets lost
       if (this.__discardChanges()) {
         return false;
@@ -569,7 +564,7 @@ qx.Class.define("playground.Application",
     __initBookmarkSupport : function()
     {
       this.__history = qx.bom.History.getInstance();
-      this.__history.addListener("changeState", this.__onHistoryChanged, this);
+      this.__history.addListener("request", this.__onHistoryChanged, this);
 
       // Handle bookmarks
       var state = this.__history.getState();

@@ -44,6 +44,7 @@
     "APPLICATION_CSS" : "${APPLICATION}/css/styles.css",  // resource id of custom css
     "QOOXDOO_PATH" : "../../../../",
     "LOCALES"      : [ "en" ],
+    "CACHE"        : "${TMPDIR}/qx${QOOXDOO_VERSION}/cache",
     "PLATFORM"     : "ios",  // provide a default
     "CSS_COMB_URI" : "./resource/${APPLICATION}/css/${PLATFORM}-style-min.css",
     "CSS_COMBINED" : "${BUILD_PATH}/${CSS_COMB_URI}",
@@ -97,11 +98,8 @@
         "qx.version"     : "1.7",
         "qx.application" : "${APPLICATION}.Application",
         "qx.mobile.emulatetouch" : true,
-        "qx.mobile.nativescroll" : false
-        /* Remove following inline comment if you want to optimize code for webkit browsers.
-         Attention: if webkit engine optimization is enabled, mobile app will not be
-         usable in Firefox. */
-        // ,"engine.name" : "webkit"
+        "qx.mobile.nativescroll" : false,
+        "engine.name" : "webkit"
       }
     },
 
