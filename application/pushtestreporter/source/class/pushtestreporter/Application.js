@@ -62,13 +62,18 @@ qx.Class.define("pushtestreporter.Application",
       var es = new EventSource('/master');
       var clients = [];
       
-      // create the composite
+      var rootContainer = new qx.ui.container.Composite()
+      rootContainer.setLayout(new qx.ui.layout.VBox(5));
       
       var scroll = new qx.ui.container.Scroll();
       
+      var toolbar = new pushtestreporter.ToolBar();
+      
       var mainContainer = new qx.ui.container.Composite()
       mainContainer.setLayout(new qx.ui.layout.HBox(5));
-      this.getRoot().add(scroll, {edge: 0});
+      this.getRoot().add(rootContainer, {edge: 0});
+      rootContainer.add(toolbar);
+      rootContainer.add(scroll, {flex : 1});
       scroll.add(mainContainer);
     
       es.addEventListener('open', function (event) {
