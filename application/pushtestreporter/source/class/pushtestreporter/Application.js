@@ -64,14 +64,11 @@ qx.Class.define("pushtestreporter.Application",
       
       // create the composite
       
-      var scroll = new qx.ui.container.Scroll().set({
-         width: 640,
-         height: 800
-       });
+      var scroll = new qx.ui.container.Scroll();
       
       var mainContainer = new qx.ui.container.Composite()
       mainContainer.setLayout(new qx.ui.layout.HBox(5));
-      this.getRoot().add(scroll);
+      this.getRoot().add(scroll, {edge: 0});
       scroll.add(mainContainer);
     
       es.addEventListener('open', function (event) {
@@ -89,17 +86,17 @@ qx.Class.define("pushtestreporter.Application",
         container.add(clientLabel);
         
         var list = new qx.ui.list.List(null);
-        list.setWidth(320);
+        list.setWidth(300);
         list.setHeight(180);
         container.add(list);
         
         var textArea = new qx.ui.form.TextArea();
-        textArea.setWidth(320);
-        textArea.setHeight(280);
+        textArea.setWidth(300);
+        textArea.setHeight(180);
         container.add(textArea);
         
         mainContainer.add(container);
-        
+                
         if (mainContainer.indexOf(container) != 0) {
           
           var ownScrollBar = container.getChildren()[1].getChildControl("scrollbar-y");
@@ -117,8 +114,16 @@ qx.Class.define("pushtestreporter.Application",
       
       es.addEventListener('clientLeft', function (event) {
         if(clients[event.data] != undefined) {
+
           mainContainer.remove(clients[event.data]);
           delete clients[event.data];
+          
+          var firstScrollBar = mainContainer.getChildren()[0].getChildren()[1].getChildControl("scrollbar-y");
+          for(var i = 1; i < mainContainer.getChildren().length; i++) {
+            var ownScrollBar = mainContainer.getChildren()[i].getChildren()[1].getChildControl("scrollbar-y");
+            ownScrollBar.bind("position", firstScrollBar, "position");
+            firstScrollBar.bind("position", ownScrollBar, "position");
+          }
         }
       });
       
@@ -158,7 +163,16 @@ qx.Class.define("pushtestreporter.Application",
           }
         });
         
+        
         list.getSelection().addListener('change', function (e) {
+          
+          // // needed if only one textArea exists
+          // for(var i = 0; i < mainContainer.getChildren().length; i++) {
+          //   if(mainContainer.indexOf(container) != i) {
+          //     mainContainer.getChildren()[i].getChildren()[1].getSelection().removeAll();
+          //   }
+          // }
+          
           var selection = list.getSelection();
           
             var message = "";
@@ -172,6 +186,8 @@ qx.Class.define("pushtestreporter.Application",
             
             var textArea = container.getChildren()[2];
             textArea.setValue(message);
+            
+            
           
         }, this);
         
@@ -183,7 +199,7 @@ qx.Class.define("pushtestreporter.Application",
       });      
 
     }
-  },
+  }
   
   // destruct : function() {
   //    this.__list = null;
