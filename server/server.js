@@ -76,16 +76,16 @@ function handleFunction(request, response) {
     // 
     // });
     
-    fs.watchFile(sourceTests, function(curr, prev) {
-      var responseText = [
-          'event:' + 'autUri',
-          'data:' + "../source/html/tests-source.html"
-          // 'data:' + "./html/tests-source.html"
-        ].join("\n") + "\n\n";
-    
-      response.write(responseText);
-      
-    });
+    // fs.watchFile(sourceTests, function(curr, prev) {
+    //   var responseText = [
+    //       'event:' + 'autUri',
+    //       'data:' + "../source/html/tests-source.html"
+    //       // 'data:' + "./html/tests-source.html"
+    //     ].join("\n") + "\n\n";
+    // 
+    //   response.write(responseText);
+    //   
+    // });
   }
   
   else if(request.url == "/events") {
