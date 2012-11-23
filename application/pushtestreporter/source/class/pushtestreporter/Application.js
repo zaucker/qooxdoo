@@ -41,7 +41,7 @@ qx.Class.define("pushtestreporter.Application",
 
   members :
   {
-   // __list : null,
+    // __toolbar : null,
     
     /**
      * This method contains the initial application code and gets called 
@@ -122,6 +122,8 @@ qx.Class.define("pushtestreporter.Application",
           firstScrollBar.bind("position", ownScrollBar, "position");
         }
         
+        toolbar.setStatus("clientJoined");
+        
       });
         
        
@@ -134,11 +136,17 @@ qx.Class.define("pushtestreporter.Application",
           mainContainer.remove(clients[event.data]);
           delete clients[event.data];
           
-          var firstScrollBar = mainContainer.getChildren()[0].getChildren()[1].getChildControl("scrollbar-y");
-          for(var i = 1; i < mainContainer.getChildren().length; i++) {
-            var ownScrollBar = mainContainer.getChildren()[i].getChildren()[1].getChildControl("scrollbar-y");
-            ownScrollBar.bind("position", firstScrollBar, "position");
-            firstScrollBar.bind("position", ownScrollBar, "position");
+          if(mainContainer.hasChildren()) {
+            var firstScrollBar = mainContainer.getChildren()[0].getChildren()[1].getChildControl("scrollbar-y");
+            for(var i = 1; i < mainContainer.getChildren().length; i++) {
+              var ownScrollBar = mainContainer.getChildren()[i].getChildren()[1].getChildControl("scrollbar-y");
+              ownScrollBar.bind("position", firstScrollBar, "position");
+              firstScrollBar.bind("position", ownScrollBar, "position");
+            }
+            toolbar.setStatus("clientLeft");
+          }
+          else {
+             toolbar.setStatus("lastLeft");
           }
         }
       });
@@ -202,13 +210,8 @@ qx.Class.define("pushtestreporter.Application",
             
             var textArea = container.getChildren()[2];
             textArea.setValue(message);
-            
-            
-          
         }, this);
-        
-        
-        
+       toolbar.setStatus("results"); 
 	    });
 	  
       es.addEventListener('error', function (event) {

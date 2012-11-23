@@ -1,6 +1,7 @@
 var fs = require('fs');
 var util = require("util");
 var static = require('node-static');
+var url = require('url');
 
 var http = require("http").createServer(handleFunction);
 http.listen(8000);
@@ -11,6 +12,7 @@ var masterClient = null;
 var clients = [];
 
 function handleFunction(request, response) {
+  console.log(request.url);
   
   if(request.url === "/") {
     response.writeHead(302, {location: "/server/index.html"});
@@ -47,7 +49,7 @@ function handleFunction(request, response) {
     }
   }
   
-  else if(request.url == "/pushTests") {
+  else if(url.parse(request.url).pathname == "/pushTests") {
     var buildTests = "../component/testrunner/build/script/tests.js";
     var sourceTests = "../component/testrunner/source/script/tests-source.js";
     
@@ -66,7 +68,8 @@ function handleFunction(request, response) {
       clients.forEach(function(res){
         res.write(responseText);
       });
-      console.log(sseData);
+      //console.log(sseData);
+      console.log("Pushed!");
     });
     
     // fs.watchFile(buildTests, function (curr, prev) {
