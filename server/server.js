@@ -47,6 +47,44 @@ function handleFunction(request, response) {
     }
   }
   
+  else if(request.url == "/pushTests") {
+    var buildTests = "../component/testrunner/build/script/tests.js";
+    var sourceTests = "../component/testrunner/source/script/tests-source.js";
+    
+    fs.readFile(buildTests, function (err, data) {
+      if (err) throw err;
+      
+      var sseData = String(data).replace(/(\r\n|\n|\r)/gm, "\ndata:");
+    
+      //console.log(fileName, "changed");
+    
+      var responseText = [
+          'event:' + 'autCode',
+          'data:' + sseData
+        ].join("\n") + "\n\n";
+        
+      clients.forEach(function(res){
+        res.write(responseText);
+      });
+      console.log(sseData);
+    });
+    
+    // fs.watchFile(buildTests, function (curr, prev) {
+    // 
+    // });
+    
+    fs.watchFile(sourceTests, function(curr, prev) {
+      var responseText = [
+          'event:' + 'autUri',
+          'data:' + "../source/html/tests-source.html"
+          // 'data:' + "./html/tests-source.html"
+        ].join("\n") + "\n\n";
+    
+      response.write(responseText);
+      
+    });
+  }
+  
   else if(request.url == "/events") {
     //console.log(request.headers["user-agent"]);
     
@@ -82,38 +120,6 @@ function handleFunction(request, response) {
       response.end();
     }
     
-    var buildTests = "../component/testrunner/build/script/tests.js"
-    var sourceTests = "../component/testrunner/source/script/tests-source.js"
-    
-    fs.watchFile(buildTests, function (curr, prev) {
-    
-      fs.readFile(buildTests, function (err, data) {
-        if (err) throw err;
-      
-        var sseData = String(data).replace(/(\r\n|\n|\r)/gm, "\ndata:");
-    
-        //console.log(fileName, "changed");
-    
-        var responseText = [
-            'event:' + 'autCode',
-            'data:' + sseData
-          ].join("\n") + "\n\n";
-    
-        response.write(responseText);
-        console.log(sseData);
-      });
-    });
-    
-    fs.watchFile(sourceTests, function(curr, prev) {
-      var responseText = [
-          'event:' + 'autUri',
-          'data:' + "../source/html/tests-source.html"
-          // 'data:' + "./html/tests-source.html"
-        ].join("\n") + "\n\n";
-    
-      response.write(responseText);
-      
-    });
    
     request.on('close', function () {
       var clientId = clients.indexOf(response);

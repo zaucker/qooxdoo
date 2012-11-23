@@ -17,6 +17,12 @@
 
 ************************************************************************ */
 
+/* ************************************************************************
+
+#asset(pushtestreporter/*)
+
+************************************************************************ */
+
 /**
  * The main tool bar widget
  */
@@ -27,15 +33,20 @@ qx.Class.define("pushtestreporter.ToolBar",
   construct : function(controller)
   {
     this.base(arguments);
+    this.setPadding(10);
     
     this.__title = new qx.ui.basic.Label().set({
-      value: "<h2>Push-Testing Reporter</h2>",
+      value: "<h3>Push-Testing Reporter</h3>",
       rich: true,
-      width: 240
+      width: 160
     });
     this.add(this.__title);
+    this.addSeparator();
     
-    this.__pushButton = new qx.ui.toolbar.Button("Push Tests!");
+    this.addSpacer();
+    
+    this.addSeparator();
+    this.__pushButton = new qx.ui.toolbar.Button("Push Tests!", "resource/pushtestreporter/view-refresh.png");
     this.__pushButton.addListener("execute", function() {
       this.fireEvent("pushTest");
     }, this);
@@ -52,7 +63,8 @@ qx.Class.define("pushtestreporter.ToolBar",
     
     _onPushTest : function() 
     {
-     console.log("Boohoo!");
+     var req = new qx.io.request.Xhr("/pushTests", "GET");
+     req.send();
     }
   },
   

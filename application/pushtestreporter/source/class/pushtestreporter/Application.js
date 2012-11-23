@@ -1,12 +1,22 @@
 /* ************************************************************************
 
+   qooxdoo - the new era of web development
+
+   http://qooxdoo.org
+
    Copyright:
+     2004-2008 1&1 Internet AG, Germany, http://www.1und1.de
 
    License:
+     LGPL: http://www.gnu.org/licenses/lgpl.html
+     EPL: http://www.eclipse.org/org/documents/epl-v10.php
+     See the LICENSE file in the project's top-level directory for details.
 
    Authors:
+     * Andreas Parusel (anpar)
 
 ************************************************************************ */
+
 
 /* ************************************************************************
 
@@ -71,6 +81,7 @@ qx.Class.define("pushtestreporter.Application",
       
       var mainContainer = new qx.ui.container.Composite()
       mainContainer.setLayout(new qx.ui.layout.HBox(5));
+      mainContainer.setPadding(10);
       this.getRoot().add(rootContainer, {edge: 0});
       rootContainer.add(toolbar);
       rootContainer.add(scroll, {flex : 1});
