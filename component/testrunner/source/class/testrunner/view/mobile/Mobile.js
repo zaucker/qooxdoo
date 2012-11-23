@@ -335,7 +335,7 @@ qx.Class.define("testrunner.view.mobile.Mobile", {
           var req = new qx.io.request.Xhr("/results", "POST");
           req.setRequestData(JSON.stringify(this.__suiteResults));
           req.send();
-          console.log(JSON.stringify(this.__suiteResults));
+          console.log("Reported Results!");
           break;
         case "aborted" :
           this.setSelectedTests(new qx.data.Array());
