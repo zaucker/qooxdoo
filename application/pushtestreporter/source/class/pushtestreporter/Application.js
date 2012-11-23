@@ -204,7 +204,11 @@ qx.Class.define("pushtestreporter.Application",
               var item = selection.getItem(x);
               var exceptions = item.getExceptions();
               for (var i = 0; i < exceptions.length; i++) {
+                debugger;
+                message += "Message:<br>";
                 message += exceptions.getItem(i).getMessage();
+                message += "<br>StackTrace:<br>";
+                message += exceptions.getItem(i).getStacktrace();
               }
             }
             
