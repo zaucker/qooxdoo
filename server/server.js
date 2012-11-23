@@ -38,18 +38,23 @@ function handleFunction(request, response) {
       // request ended, so print the body to the console
       request.on('end', function() {
         response.writeHead(200);
-        // response.writeHead(200, "OK", {'Content-Type': 'text/plain'})3;
         response.end();
         
         masterClient.write('event:results' + '\n' +
                           'data:' + fullBody + '\n\n'); 
-                          console.log('event:results' + '\n' +
-                                            'data:' + fullBody + '\n\n'); 
+                          // console.log('event:results' + '\n' +
+                          //                   'data:' + fullBody + '\n\n'); 
       });
     }
   }
   
   else if(url.parse(request.url).pathname == "/pushTests") {
+    
+    request.on('end', function() {
+      response.writeHead(200);
+      response.end();
+    });
+
     var buildTests = "../component/testrunner/build/script/tests.js";
     var sourceTests = "../component/testrunner/source/script/tests-source.js";
     
