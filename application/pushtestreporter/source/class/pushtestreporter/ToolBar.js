@@ -36,9 +36,8 @@ qx.Class.define("pushtestreporter.ToolBar",
     this.setPadding(10);
     
     this.__title = new qx.ui.basic.Label().set({
-      value: "<h2>Push-Testing Reporter</h2>",
-      rich: true,
-      width: 240
+      value: "<h3>Push-Testing Reporter</h3>",
+      rich: true
     });
     this.add(this.__title);
     this.addSeparator();
@@ -46,12 +45,12 @@ qx.Class.define("pushtestreporter.ToolBar",
     
     this.__status = new qx.ui.basic.Label().set({
       value: "<h3>Waiting for Clients...</h3>",
-      rich: true,
-      width: 240
+      rich: true
+      //width: 300
     });
     this.add(this.__status);
-   // this.addSeparator();
     this.addSpacer();
+    this.addSeparator();
     
     var model = new qx.data.Array();
       for (var i = 0; i < 5; i++) {
