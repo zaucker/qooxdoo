@@ -50,8 +50,28 @@ qx.Class.define("pushtestreporter.ToolBar",
       width: 240
     });
     this.add(this.__status);
-    this.addSeparator();
+   // this.addSeparator();
     this.addSpacer();
+    
+    var model = new qx.data.Array();
+      for (var i = 0; i < 5; i++) {
+        model.push("Suite " + (i+1));
+      }
+    this.__testSelector = new qx.ui.form.VirtualSelectBox(model);
+    
+    this.add(this.__testSelector);
+    
+    //pre-select first test
+    this.__testSelector.getSelection().push(model.getItem(0));
+    this.__pushURL = "/push?Suite1"
+    
+    this.__testSelector.getSelection().addListener("change", function(e) {
+      var selection = this.__testSelector.getSelection().getItem(0);
+      
+      this.__pushURL = "/push?Suite" + String(selection).slice(6); 
+      this.debug(this.__pushURL);
+    }, this);
+
     
     this.__pushButton = new qx.ui.toolbar.Button("Push Tests!", "resource/pushtestreporter/view-refresh.png");
     this.__pushButton.addListener("execute", this._onPushTest, this);
@@ -66,11 +86,12 @@ qx.Class.define("pushtestreporter.ToolBar",
     __title : null,
     __pushButton : null,
     __status : null,
+    __testSelector : null,
+    __pushURL : null,
     
     _onPushTest : function() 
     {
-     var req = new qx.io.request.Xhr("/pushTests", "GET");
-     debugger;
+     var req = new qx.io.request.Xhr(this.__pushURL, "GET");
      // // for debugging
      // req.addListener("success", function(e) {
      //   console.log("success");

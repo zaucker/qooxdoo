@@ -48,7 +48,7 @@ function handleFunction(request, response) {
     }
   }
   
-  else if(request.url == "/pushTests") {
+  else if(url.parse(request.url).pathname == "/push") {
     
     request.on('end', function() {
       response.writeHead(200);
@@ -58,24 +58,26 @@ function handleFunction(request, response) {
     var buildTests = "../component/testrunner/build/script/tests.js";
     var sourceTests = "../component/testrunner/source/script/tests-source.js";
     
-    fs.readFile(buildTests, function (err, data) {
-      if (err) throw err;
+    if (url.parse(request.url).search == "?Suite3") {
+      fs.readFile(buildTests, function (err, data) {
+        if (err) throw err;
       
-      var sseData = String(data).replace(/(\r\n|\n|\r)/gm, "\ndata:");
+        var sseData = String(data).replace(/(\r\n|\n|\r)/gm, "\ndata:");
     
-      //console.log(fileName, "changed");
+        //console.log(fileName, "changed");
     
-      var responseText = [
-          'event:' + 'autCode',
-          'data:' + sseData
-        ].join("\n") + "\n\n";
+        var responseText = [
+            'event:' + 'autCode',
+            'data:' + sseData
+          ].join("\n") + "\n\n";
         
-      clients.forEach(function(res){
-        res.write(responseText);
+        clients.forEach(function(res){
+          res.write(responseText);
+        });
+        //console.log(sseData);
+        console.log("Pushed!");
       });
-      //console.log(sseData);
-      console.log("Pushed!");
-    });
+    }
     
     // fs.watchFile(buildTests, function (curr, prev) {
     // 
