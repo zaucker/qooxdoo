@@ -187,7 +187,8 @@ function detectDevice(userAgentString){
   
   else if (match[1] && match[2]) {
     //doesnt work with 5.1.1. shows: 5.1_1
-    return match[1] + String(match[2]).replace(/_/,".");
+    // return match[1] + String(match[2]).replace(/_/,".");
+    return match[1] + match[2];
   } 
   
   else {
