@@ -69,8 +69,8 @@ qx.Class.define("pushtestreporter.ToolBar",
     
     _onPushTest : function() 
     {
-     var req = new qx.io.request.Xhr("/pushTests?" + Date.now(), "GET");
-     
+     var req = new qx.io.request.Xhr("/pushTests", "GET");
+     debugger;
      // // for debugging
      // req.addListener("success", function(e) {
      //   console.log("success");

@@ -48,7 +48,7 @@ function handleFunction(request, response) {
     }
   }
   
-  else if(url.parse(request.url).pathname == "/pushTests") {
+  else if(request.url == "/pushTests") {
     
     request.on('end', function() {
       response.writeHead(200);
