@@ -8,20 +8,20 @@ http.listen(8000);
 
 var fileServer = new static.Server('../');
 
-var masterClient = null;
+var reporter = null;
 var clients = [];
 
 function handleFunction(request, response) {
   console.log(request.url);
   
-  if(request.url === "/") {
-    response.writeHead(302, {location: "/server/index.html"});
-    response.end();
-  }
+  // if(request.url === "/") {
+  //   response.writeHead(302, {location: "/server/index.html"});
+  //   response.end();
+  // }
   
-  else if(request.url == "/master") {
+  if(request.url == "/master") {
     setUpResponseForSSE(response);
-    masterClient = response;
+    reporter = response;
   }
   
   else if(request.url == "/results") {
@@ -30,20 +30,20 @@ function handleFunction(request, response) {
 
       var fullBody = '';
 
-      // as long as data come in, append the current chunk of data to the fullBody variable
+      // as long as data come in, append the current
+      // chunk of data to the fullBody variable
       request.on('data', function(chunk) {
           fullBody += chunk.toString();
         });
 
-      // request ended, so print the body to the console
+      // request finished, so close it and
+      // report results to the reporter
       request.on('end', function() {
         response.writeHead(200);
         response.end();
         
-        masterClient.write('event:results' + '\n' +
-                          'data:' + fullBody + '\n\n'); 
-                          // console.log('event:results' + '\n' +
-                          //                   'data:' + fullBody + '\n\n'); 
+        reporter.write('event:results' + '\n' +
+                       'data:' + fullBody + '\n\n'); 
       });
     }
   }
@@ -98,29 +98,37 @@ function handleFunction(request, response) {
   else if(request.url == "/events") {
     //console.log(request.headers["user-agent"]);
     
+    
     var client = {};
     
+    // in case of reconnection, keep the old client.id
     if (request.headers['last-event-id']) {
       var lastId = parseInt(request.headers['last-event-id'])-1;
       client.id = lastId;
-      
     }
     else {
+      // save the response in clients-array
       clients.push(response);
+      
       // clientId - 1 = index in clients[]
       client.id = clients.indexOf(response)+1;
     }
     
     setUpResponseForSSE(response);
     
-    if(masterClient != null) {
+    if(reporter != null) {
       
+      // extract platform an OS-Version
       client.device = detectDevice(request.headers["user-agent"]);
       
-      masterClient.write('event:clientJoined' + '\n' +
-                            'data:' + JSON.stringify(client) + '\n\n');
+      // client gets his ID
       response.write('event:clientId' + '\n' +
-                          'data:' + client.id + '\n\n'); 
+                     'data:' + client.id + '\n\n'); 
+      
+      // reporter gets notified about new client
+      reporter.write('event:clientJoined' + '\n' +
+                     'data:' + JSON.stringify(client) + '\n\n');
+                     
     }
     
     else {
@@ -130,26 +138,32 @@ function handleFunction(request, response) {
       response.end();
     }
     
-   
+    //client left!
     request.on('close', function () {
+      
+      // remove it from clients-array
       var clientId = clients.indexOf(response);
       delete clients[clientId];
       
-      if(masterClient != null) {
-        masterClient.write('event:clientLeft' + '\n' +
-                            'data:' + (clientId+1) + '\n\n'); 
+      // notify reporter about it
+      if(reporter != null) {
+        reporter.write('event:clientLeft' + '\n' +
+                       'data:' + (clientId+1) + '\n\n'); 
       }
-      
     });
 
   }
+  // requests to every other URL are interpreted as requests
+  // for files
   else {
     request.addListener('end', function () {
       fileServer.serve(request, response, function (err, result) {
-        if (err) { // There was an error serving the file
+        // there was an error serving the file
+        if (err) {
+          // report the error to the console 
           util.error("Error serving " + request.url + " - " + err.message);
     
-          // Respond to the client
+          // respond to the client with 404
           response.writeHead(err.status, err.headers);
           response.end();
         }
