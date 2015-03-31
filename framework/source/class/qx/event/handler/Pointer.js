@@ -27,6 +27,9 @@ qx.Class.define("qx.event.handler.Pointer",
 {
   extend : qx.event.handler.PointerCore,
   implement : qx.event.IEventHandler,
+  include: qx.core.Environment.filter({
+    "qx.debug" : qx.core.MAssert
+  }),
 
   statics : {
 

@@ -74,12 +74,13 @@ qx.Interface.define("qx.ui.core.scroll.IScrollBar",
      * the {@link #maximum}.
      *
      * @param position {Integer} Scroll to this position. Must be greater zero.
-     * @param duration {Number} The time in milliseconds the slide to should take.
+     * @param duration {Number?} The time in milliseconds the slide to should take.
      */
     scrollTo : function(position, duration) {
-      this.assertArgumentsCount(arguments, 2, 2);
       this.assertPositiveInteger(position);
-      this.assertPositiveNumber(duration);
+      if (typeof duration !== "undefined") {
+        this.assertPositiveNumber(duration);
+      }
     },
 
 
@@ -90,12 +91,13 @@ qx.Interface.define("qx.ui.core.scroll.IScrollBar",
      * the {@link #maximum}.
      *
      * @param offset {Integer} Scroll by this offset
-     * @param duration {Number} The time in milliseconds the slide to should take.
+     * @param duration {Number?} The time in milliseconds the slide to should take.
      */
     scrollBy : function(offset, duration) {
-      this.assertArgumentsCount(arguments, 2, 2);
       this.assertPositiveInteger(offset);
-      this.assertPositiveNumber(duration);
+      if (typeof duration !== "undefined") {
+        this.assertPositiveNumber(duration);
+      }
     },
 
 
@@ -106,12 +108,13 @@ qx.Interface.define("qx.ui.core.scroll.IScrollBar",
      * the {@link #maximum}.
      *
      * @param steps {Integer} Number of steps
-     * @param duration {Number} The time in milliseconds the slide to should take.
+     * @param duration {Number?} The time in milliseconds the slide to should take.
      */
     scrollBySteps : function(steps, duration) {
-      this.assertArgumentsCount(arguments, 2, 2);
       this.assertPositiveInteger(steps);
-      this.assertPositiveNumber(duration);
+      if (typeof duration !== "undefined") {
+        this.assertPositiveNumber(duration);
+      }
     }
   }
 });

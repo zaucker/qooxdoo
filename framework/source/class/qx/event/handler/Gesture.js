@@ -26,6 +26,9 @@ qx.Class.define("qx.event.handler.Gesture",
 {
   extend : qx.event.handler.GestureCore,
   implement : qx.event.IEventHandler,
+  include: qx.core.Environment.filter({
+    "qx.debug" : qx.core.MAssert
+  }),
 
   statics : {
 

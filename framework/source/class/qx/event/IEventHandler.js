@@ -58,7 +58,10 @@ qx.Interface.define("qx.event.IEventHandler",
      */
     canHandleEvent : function(target, type) {
       this.assertArgumentsCount(arguments, 2, 2);
-      this.assertInstance(target, Object);
+      this.assertTrue(
+        qx.dom.Node.isWindow(target) || qx.dom.Node.isElement(target) || qx.dom.Node.isDocument(target) || target instanceof qx.core.Object,
+        "Expected value to be Window, Document, Element or Event but found " + target
+      );
       this.assertString(type);
     },
 
@@ -75,7 +78,10 @@ qx.Interface.define("qx.event.IEventHandler",
      */
     registerEvent : function(target, type, capture) {
       this.assertArgumentsCount(arguments, 3, 3);
-      this.assertInstance(target, Object);
+      this.assertTrue(
+        qx.dom.Node.isWindow(target) || qx.dom.Node.isElement(target) || qx.dom.Node.isDocument(target) || target instanceof qx.core.Object,
+        "Expected value to be Window, Document, Element or Event but found " + target
+      );
       this.assertString(type);
       this.assertBoolean(capture);
     },
@@ -94,9 +100,12 @@ qx.Interface.define("qx.event.IEventHandler",
      */
     unregisterEvent : function(target, type, capture) {
       this.assertArgumentsCount(arguments, 3, 3);
-      this.assertInstance(target, Object);
+      this.assertTrue(
+        qx.dom.Node.isWindow(target) || qx.dom.Node.isElement(target) || qx.dom.Node.isDocument(target) || target instanceof qx.core.Object,
+        "Expected value to be Window, Document, Element or Event but found " + target
+      );
       this.assertString(type);
-      this.assertBolean(capture);
+      this.assertBoolean(capture);
     }
   }
 });

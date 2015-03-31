@@ -34,6 +34,9 @@ qx.Class.define("qx.event.handler.Touch",
 {
   extend : qx.event.handler.TouchCore,
   implement : qx.event.IEventHandler,
+  include: qx.core.Environment.filter({
+    "qx.debug" : qx.core.MAssert
+  }),
 
   /*
   *****************************************************************************
