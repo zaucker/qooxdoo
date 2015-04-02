@@ -746,66 +746,75 @@ qx.Class.define("qx.ui.basic.Image",
      * @param el {Element} image DOM element
      * @param source {String} source path
      */
-    __setSource : function(el, source) {
-      var highResSource = (source && qx.util.ResourceManager.getInstance().has(source)) ?
-          this._findHighResolutionSource(source) : null;
+    __setSource: function (el, source) {
+      var highResSource = null;
+      if (source && qx.util.ResourceManager.getInstance().has(source)) {
+        highResSource = this._findHighResolutionSource(source);
+      }
 
       var decorator = qx.theme.manager.Decoration.getInstance().resolve(this.getDecorator());
 
-      if (el.getNodeName() == "div" || highResSource && decorator) {
-
-        // if the decorator defines any CSS background-image
-        if (decorator) {
-          var hasGradient = (decorator.getStartColor() && decorator.getEndColor());
-          var hasBackground = decorator.getBackgroundImage();
-          if (hasGradient || hasBackground) {
-            var repeat = this.getScale() ? "scale" : "no-repeat";
-
-            // get the style attributes for the given source
-            var attr = qx.bom.element.Decoration.getAttributes(highResSource || source, repeat);
-            // get the background image(s) defined by the decorator
-            var decStyle = decorator.getStyles(true);
-
-            var combinedStyles = {
-              "backgroundImage":  attr.style.backgroundImage,
-              "backgroundPosition": (attr.style.backgroundPosition || "0 0"),
-              "backgroundRepeat": (attr.style.backgroundRepeat || "no-repeat")
-            };
-            if (highResSource) {
-              combinedStyles.backgroundSize = "100%, auto";
-              combinedStyles.backgroundRepeat = "no-repeat";
-              combinedStyles.backgroundPosition = "50% 50%";
-            }
-
-            if (hasBackground) {
-              combinedStyles["backgroundPosition"] += "," + decStyle["background-position"] || "0 0";
-              combinedStyles["backgroundRepeat"] += ", " + decorator.getBackgroundRepeat();
-            }
-
-            if (hasGradient) {
-              combinedStyles["backgroundPosition"] += ", 0 0";
-              combinedStyles["backgroundRepeat"] += ", no-repeat";
-            }
-
-            combinedStyles["backgroundImage"] += "," + decStyle["background-image"];
-
-            // apply combined background images
-            el.setStyles(combinedStyles);
-
-            if(el.getNodeName() == "img") {
-              el.setAttribute("src", qx.ui.basic.Image.PLACEHOLDER_IMAGE);
-            }
-
-            return;
-          }
-        } else {
-          // force re-apply to remove old decorator styles
-          el.setSource(null);
-        }
-      }
+      //if (el.getNodeName() == "div" || highResSource && decorator) {
+      //
+      //  // if the decorator defines any CSS background-image
+      //  if (decorator) {
+      //    var hasGradient = (decorator.getStartColor() && decorator.getEndColor());
+      //    var hasBackground = decorator.getBackgroundImage();
+      //    if (hasGradient || hasBackground) {
+      //      var repeat = this.getScale() ? "scale" : "no-repeat";
+      //
+      //      // get the style attributes for the given source
+      //      var attr = qx.bom.element.Decoration.getAttributes(highResSource || source, repeat);
+      //      // get the background image(s) defined by the decorator
+      //      var decStyle = decorator.getStyles(true);
+      //
+      //      var combinedStyles = {
+      //        "backgroundImage":  attr.style.backgroundImage,
+      //        "backgroundPosition": (attr.style.backgroundPosition || "0 0"),
+      //        "backgroundRepeat": (attr.style.backgroundRepeat || "no-repeat")
+      //      };
+      //      if (highResSource) {
+      //        combinedStyles.backgroundSize = "100%, auto";
+      //        combinedStyles.backgroundRepeat = "no-repeat";
+      //        combinedStyles.backgroundPosition = "50% 50%";
+      //      }
+      //
+      //      if (hasBackground) {
+      //        combinedStyles["backgroundPosition"] += "," + decStyle["background-position"] || "0 0";
+      //        combinedStyles["backgroundRepeat"] += ", " + decorator.getBackgroundRepeat();
+      //      }
+      //
+      //      if (hasGradient) {
+      //        combinedStyles["backgroundPosition"] += ", 0 0";
+      //        combinedStyles["backgroundRepeat"] += ", no-repeat";
+      //      }
+      //
+      //      combinedStyles["backgroundImage"] += "," + decStyle["background-image"];
+      //
+      //      // apply combined background images
+      //      el.setStyles(combinedStyles);
+      //
+      //      if(el.getNodeName() == "img") {
+      //        el.setAttribute("src", qx.ui.basic.Image.PLACEHOLDER_IMAGE);
+      //      }
+      //
+      //      return;
+      //    }
+      //  } else {
+      //    // force re-apply to remove old decorator styles
+      //    el.setSource(null);
+      //  }
+      //}
 
       if (highResSource) {
-        this._createHighResolutionOverlay(highResSource);
+        //this.setSource(highResSource);
+        //el.setSource(highResSource);
+        //
+        //var ResourceManager = qx.util.ResourceManager.getInstance();
+        //this.__updateContentHint(
+        //  ResourceManager.getImageWidth(highResSource),
+        //  ResourceManager.getImageHeight(highResSource)
+        //);
       } else {
         el.setSource(source);
       }
