@@ -713,8 +713,6 @@ qx.Bootstrap.define("qx.module.Event", {
     /**
      * Checks if one or more listeners for the given event type have been attached to
      * the first element in the collection using the 'onMatchTarget' function.
-<<<<<<< HEAD
-=======
      *
      * *Important:* Make sure you are handing in the *identical* context object to get
      * the correct result. Especially when using a collection instance this is a common pitfall.
@@ -745,46 +743,23 @@ qx.Bootstrap.define("qx.module.Event", {
     },
 
 
-    /**
-     * Registers a normalization function for the given event types. Listener
-     * callbacks for these types will be called with the return value of the
-     * normalization function instead of the regular event object.
->>>>>>> 9be97db... [BUG #9181] Added hasMatchListener to check if a listener has been attached using 'onMatchTarget'
-     *
-     * *Important:* Make sure you are handing in the *identical* context object to get
-     * the correct result. Especially when using a collection instance this is a common pitfall.
-     * Check out the corresponding code sample below to get it right.
-     *
-     * @attach {qxWeb}
-     * @param type {String} Event type, e.g. <code>mousedown</code>
-     * @param target {String|Element|Element[]|qxWeb} Selector expression, DOM element,
-     * @param callback {Function?} Event listener to check for.
-     * @param context {Object?} Context object listener to check for.
-     * @return {Boolean} <code>true</code> if one or more listeners are attached
-     */
-    hasMatchListener : function(type, target, callback, context) {
-
-      context = context !== undefined ? context : this;
-
-      for(var j = 0, l = this.length; j < l; j++) {
-        var infos = this[j].$$matchTargetInfo || [];
-        for(var i = infos.length - 1; i >= 0; i--) {
-          var entry = infos[i];
-          if(entry.type == type && entry.callback == callback && entry.target == target && entry.context == context) {
-            return true;
-          }
-        }
-      }
-
-      return false;
-    }
-
-  },
-
-
   defer : function(statics) {
     qxWeb.$attachAll(this);
     // manually attach internal $-methods as they are ignored by the previous method-call
+    qxWeb.$attach({
+      "on" : statics.on,
+      "off" : statics.off,
+      "allOff" : statics.allOff,
+      "offById" : statics.offById,
+      "once" : statics.once,
+      "emit" : statics.emit,
+      "hasListener" : statics.hasListener,
+      "copyEventsTo" : statics.copyEventsTo,
+      "hover" : statics.hover,
+      "onMatchTarget" : statics.onMatchTarget,
+      "offMatchTarget" : statics.offMatchTarget,
+      "hasMatchListener" : statics.hasMatchListener
+    });
     qxWeb.$attachStatic({
       "$registerEventNormalization" : statics.$registerEventNormalization,
       "$unregisterEventNormalization" : statics.$unregisterEventNormalization,
