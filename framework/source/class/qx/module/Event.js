@@ -628,22 +628,24 @@ qx.Bootstrap.define("qx.module.Event", {
      */
     onMatchTarget : function(eventType, target, callback, context) {
 
-      context = context !== undefined ? context : this;
-      var listener = function(e) {
+      context = context !== undefined ? context : this
+
+      var listener = function(e){
 
         var eventTarget = qxWeb(e.getTarget());
-        var targetToMatch = typeof target == "string" ? this.find(target) : qxWeb(target);
-        if(eventTarget.is(target)) {
+        if (eventTarget.is(target)) {
           callback.call(context, eventTarget, qxWeb.object.clone(e));
         } else {
-          for(var i = 0,l = targetToMatch.length;i < l;i++){
-            if(eventTarget.isChildOf(qxWeb(targetToMatch[i]))){
+          var targetToMatch = typeof target == "string" ? this.find(target) : qxWeb(target);
+          for(var i = 0, l = targetToMatch.length; i < l; i++) {
+            if(eventTarget.isChildOf(qxWeb(targetToMatch[i]))) {
               callback.call(context, eventTarget, qxWeb.object.clone(e));
               break;
-            };
-          };
-        };
+            }
+          }
+        }
       };
+
       // make sure to store the infos for 'offMatchTarget' at each element of the collection
       // to be able to remove the listener separately
       this.forEach(function(el) {
