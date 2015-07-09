@@ -628,24 +628,21 @@ qx.Bootstrap.define("qx.module.Event", {
      */
     onMatchTarget : function(eventType, target, callback, context) {
 
-      context = context !== undefined ? context : this
-
-      var listener = function(e){
-
+      context = context !== undefined ? context : this;
+      var listener = function(e) {
         var eventTarget = qxWeb(e.getTarget());
-        if (eventTarget.is(target)) {
+        var targetToMatch = typeof target == "string" ? this.find(target) : qxWeb(target);
+        if(eventTarget.is(target)) {
           callback.call(context, eventTarget, qxWeb.object.clone(e));
         } else {
-          var targetToMatch = typeof target == "string" ? this.find(target) : qxWeb(target);
-          for(var i = 0, l = targetToMatch.length; i < l; i++) {
-            if(eventTarget.isChildOf(qxWeb(targetToMatch[i]))) {
+          for(var i = 0,l = targetToMatch.length;i < l;i++){
+            if(eventTarget.isChildOf(qxWeb(targetToMatch[i]))){
               callback.call(context, eventTarget, qxWeb.object.clone(e));
               break;
-            }
-          }
-        }
+            };
+          };
+        };
       };
-
       // make sure to store the infos for 'offMatchTarget' at each element of the collection
       // to be able to remove the listener separately
       this.forEach(function(el) {
@@ -716,6 +713,43 @@ qx.Bootstrap.define("qx.module.Event", {
     /**
      * Checks if one or more listeners for the given event type have been attached to
      * the first element in the collection using the 'onMatchTarget' function.
+<<<<<<< HEAD
+=======
+     *
+     * *Important:* Make sure you are handing in the *identical* context object to get
+     * the correct result. Especially when using a collection instance this is a common pitfall.
+     * Check out the corresponding code sample below to get it right.
+     *
+     * @attach {qxWeb}
+     * @param type {String} Event type, e.g. <code>mousedown</code>
+     * @param target {String|Element|Element[]|qxWeb} Selector expression, DOM element,
+     * @param callback {Function?} Event listener to check for.
+     * @param context {Object?} Context object listener to check for.
+     * @return {Boolean} <code>true</code> if one or more listeners are attached
+     */
+    hasMatchListener : function(type, target, callback, context) {
+
+      context = context !== undefined ? context : this;
+
+      for(var j = 0, l = this.length; j < l; j++) {
+        var infos = this[j].$$matchTargetInfo || [];
+        for(var i = infos.length - 1; i >= 0; i--) {
+          var entry = infos[i];
+          if(entry.type == type && entry.callback == callback && entry.target == target && entry.context == context) {
+            return true;
+          }
+        }
+      }
+
+      return false;
+    },
+
+
+    /**
+     * Registers a normalization function for the given event types. Listener
+     * callbacks for these types will be called with the return value of the
+     * normalization function instead of the regular event object.
+>>>>>>> 9be97db... [BUG #9181] Added hasMatchListener to check if a listener has been attached using 'onMatchTarget'
      *
      * *Important:* Make sure you are handing in the *identical* context object to get
      * the correct result. Especially when using a collection instance this is a common pitfall.
