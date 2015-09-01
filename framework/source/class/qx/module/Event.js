@@ -748,20 +748,6 @@ qx.Bootstrap.define("qx.module.Event", {
   defer : function(statics) {
     qxWeb.$attachAll(this);
     // manually attach internal $-methods as they are ignored by the previous method-call
-    qxWeb.$attach({
-      "on" : statics.on,
-      "off" : statics.off,
-      "allOff" : statics.allOff,
-      "offById" : statics.offById,
-      "once" : statics.once,
-      "emit" : statics.emit,
-      "hasListener" : statics.hasListener,
-      "copyEventsTo" : statics.copyEventsTo,
-      "hover" : statics.hover,
-      "onMatchTarget" : statics.onMatchTarget,
-      "offMatchTarget" : statics.offMatchTarget,
-      "hasMatchListener" : statics.hasMatchListener
-    });
     qxWeb.$attachStatic({
       "$registerEventNormalization" : statics.$registerEventNormalization,
       "$unregisterEventNormalization" : statics.$unregisterEventNormalization,
