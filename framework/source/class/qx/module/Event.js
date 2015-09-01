@@ -740,7 +740,9 @@ qx.Bootstrap.define("qx.module.Event", {
       }
 
       return false;
-    },
+    }
+
+  },
 
 
   defer : function(statics) {
