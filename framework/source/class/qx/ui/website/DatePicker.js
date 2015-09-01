@@ -252,12 +252,15 @@ qx.Bootstrap.define('qx.ui.website.DatePicker', {
         return;
       }
 
-      var calendar = qxWeb('div#' + this.getProperty('calendarId'));
+      var calendar = this.getCalendar();
 
       if (calendar.getStyle('display') == 'none') {
-        this.getCalendar().show().placeTo(this, this.getConfig('position'));
+        // set position to make sure the width of the DOM element is correct - otherwise the DOM 
+        // element would be as wide as the parent (e.g. the body element). This would mess up the
+        // positioning with 'placeTo'
+        calendar.setStyle('position', 'absolute').show().placeTo(this, this.getConfig('position'));
       } else {
-        this.getCalendar().hide();
+        calendar.hide();
       }
     },
 
@@ -364,7 +367,9 @@ qx.Bootstrap.define('qx.ui.website.DatePicker', {
 
           var openingMode = collection.getConfig('mode');
           if (openingMode === 'icon' || openingMode === 'both') {
-            icon.on('tap', this._onTap, collection);
+            if (!icon.hasListener('tap', this._onTap, collection)) {
+              icon.on('tap', this._onTap, collection);
+            }
           }
 
           icon.insertAfter(collection);
@@ -379,10 +384,14 @@ qx.Bootstrap.define('qx.ui.website.DatePicker', {
      * @param collection {qxWeb} collection to work on
      */
     __addInputListener : function(collection) {
+
+      // use the context for $onFirstCollection / $offFirstCollection to be sure the 
+      // listeners are not added multiple times. The context is saved at the DOM element to check
+      // for existing listeners.
       if (collection.getConfig('mode') === 'icon') {
-        collection.$offFirstCollection('tap', collection._onTap);
+        collection.$offFirstCollection('tap', collection._onTap, collection);
       } else {
-        collection.$onFirstCollection('tap', collection._onTap);
+        collection.$onFirstCollection('tap', collection._onTap, collection);
       }
     },
 
