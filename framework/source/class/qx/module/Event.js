@@ -295,15 +295,13 @@ qx.Bootstrap.define("qx.module.Event", {
         var bound = function(el, event) {
           // store current event infos to be able to sort out
           // double events (happening e.g. with 'orientationChange')
-          if (event && event.type && event.timeStamp) {
-            if (!el.$$eventHistory) {
-              el.$$eventHistory = {};
-            }
-            if (el.$$eventHistory[event.type] === event.timeStamp) {
-              return;
-            }
-            el.$$eventHistory[event.type] = event.timeStamp;
+          if (!el.$$eventHistory) {
+            el.$$eventHistory = {};
           }
+          if (el.$$eventHistory[event.type] === event.timeStamp) {
+            return;
+          }
+          el.$$eventHistory[event.type] = event.timeStamp;
 
           // apply normalizations
           var registry = qx.module.Event.__normalizations;
