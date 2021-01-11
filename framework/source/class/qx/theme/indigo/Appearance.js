@@ -183,8 +183,9 @@ qx.Theme.define("qx.theme.indigo.Appearance",
     "list-search-highlight" : {
       style : function(states) {
         return {
-          color      : '#FF0000',
-          fontWeight : 'bold'
+          backgroundColor : 'rgba(255, 251, 0, 0.53)',
+          textDecorationStyle: 'dotted',
+          textDecorationLine: 'underline'
         };
       }
     }
