@@ -541,6 +541,7 @@ qx.Class.define("qx.ui.form.VirtualSelectBox",
       }
 
       var filterValue = this.__filterValue;
+<<<<<<< Updated upstream
       var parts = item.split(filterValue);
       if (!this.__lastRich) {
         parts[0] = qx.module.util.String.escapeHtml(parts[0]);
@@ -548,6 +549,23 @@ qx.Class.define("qx.ui.form.VirtualSelectBox",
       }
       filterValue = qx.module.util.String.escapeHtml(this.__filterValue);
       return parts[0]
+=======
+      var parts = item.match(new RegExp('(.*)' +  qx.module.util.String.escapeRegexpChars(filterValue) + '(.*)', 'i'));
+      if (!parts) {
+          parts = [ null, '', '' ];
+      }
+      else {
+        parts[1] = parts[1] ? parts[1] : '';
+        parts[2] = parts[2] ? parts[2] : '';
+      }
+      if (!this.__lastRich) {
+        parts[1] = qx.module.util.String.escapeHtml(parts[1]);
+        parts[2] = qx.module.util.String.escapeHtml(parts[2]);
+      }
+      filterValue = qx.module.util.String.escapeHtml(this.__filterValue);
+      console.log('_highlightFilterValue(): filterValue=', filterValue, ', parts=', parts);
+      return parts[1]
+>>>>>>> Stashed changes
         + '<span style="' + highlightStyle + '">'
         + filterValue
         + '</span>'
@@ -558,10 +576,17 @@ qx.Class.define("qx.ui.form.VirtualSelectBox",
     {
       this.__filterUpdateRunning++;
       var filterValue = (lastFilterValue !== undefined) ? lastFilterValue : this.__filterInput.getValue();
+<<<<<<< Updated upstream
+=======
+        console.log('__updateDelegate(): filterValue=', filterValue);     
+      var filterRegExp = new RegExp(qx.module.util.String.escapeRegexpChars(filterValue), 'i');
+>>>>>>> Stashed changes
       this.__filterValue = filterValue;
+        console.log('__updateDelegate(): filterValue=', filterValue, ', filterRegExp=', filterRegExp);
       // create and apply new filter
       var delegate = {
         filter : function(item) {
+<<<<<<< Updated upstream
           return item.match(qx.module.util.String.escapeRegexpChars(filterValue));
         },
         configureItem : function(item) {
@@ -570,6 +595,23 @@ qx.Class.define("qx.ui.form.VirtualSelectBox",
       };
       this.setDelegate(delegate);
 
+=======
+          if (that.getLabelPath() != null)
+          {
+            item = qx.data.SingleValueBinding.resolvePropertyChain(item, that.getLabelPath());
+          }
+          console.log('filter: filterRegExp=', filterRegExp);
+          return item.match(filterRegExp);
+        },
+        configureItem : function(item) {
+          item.setRich(true);
+        }          
+      };
+      if (this.__delegate && this.__delegate.bindItem) {
+        delegate.bindItem = this.__delegate.bindItem;
+      }
+      this.setDelegate(delegate);
+>>>>>>> Stashed changes
       // update selection if there is at least one item left,
       // otherwise shorten filterValue and re-run filtering
       // This deals with multi-char input like for ü on MacOS where
@@ -591,6 +633,20 @@ qx.Class.define("qx.ui.form.VirtualSelectBox",
       this.__filterUpdateRunning--;
     },
 
+<<<<<<< Updated upstream
+=======
+    _applyDelegate : function(value, old) {
+      if (this.isIncrementalSearch()) {  
+        if (old && old.configureItem && !value.configureItem) {
+          value.configureItem = function(item) {
+            item.setRich(true);
+          };
+        }
+      }
+      this.getChildControl("dropdown").getChildControl("list").setDelegate(value);
+    },
+
+>>>>>>> Stashed changes
     __initIncrementalSearch : function()
     {
       this.__lastRich = this.getChildControl('atom').getRich();
